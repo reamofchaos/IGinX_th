@@ -27,6 +27,11 @@ on:
                 type: string
                 required: false
                 default: '["IoTDB12", "InfluxDB", "FileSystem", "PostgreSQL", "Redis", "MongoDB", "MySQL"]'
+            timeout-minutes:
+                description: "The timeout minutes for the job"
+                type: number
+                required: false
+                default: 120
             close-optimizer:
                 description: "Whether to close the optimizer"
                 type: string
@@ -38,7 +43,7 @@ env:
 
 jobs:
     DB-CE:
-        timeout-minutes: 120
+        timeout-minutes: ${{ inputs.timeout-minutes }}
         strategy:
             fail-fast: false
             matrix:
@@ -73,6 +78,7 @@ jobs:
                   MySQL-ports: 3306 3307 3308
                   PostgreSQL-ports: 5432 5433 5434
                   Redis-ports: 6379 6380 6381
+                  VectorDB-ports: 19530 19531 19532
 
             - name: Install IGinX with Maven
               shell: bash
@@ -108,6 +114,7 @@ jobs:
               shell: bash
               run: |
                   mvn test -q -Dtest=${FUNCTEST} -DfailIfNoTests=false -P-format
+
             # 第 2 阶段测试开始==========================================
             - name: Prepare CapExp environment oriNoDataExpNoData
               uses: ./.github/actions/capacityExpansionUnionTest

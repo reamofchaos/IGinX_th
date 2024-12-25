@@ -29,6 +29,10 @@ inputs:
         description: "Redis ports"
         required: false
         default: 6379
+    VectorDB-ports:
+        description: "VectorDB ports"
+        required: false
+        default: 19530
 
 runs:
     using: "composite" # Mandatory parameter
@@ -176,6 +180,29 @@ runs:
               paths: conf/config.properties
               statements: s|^#storageEngineList=127.0.0.1#3306#relational#engine=mysql#username=root#password=mysql#has_data=false#meta_properties_path=your-meta-properties-path|storageEngineList=127.0.0.1#3306#relational#engine=mysql#username=root#has_data=false|g
 
+        - if: inputs.DB-name=='VectorDB'
+          name: Run Milvus DB
+          uses: ./.github/actions/service/vectordb
+          with:
+              stop: false
+              clean: false
+              start: true
+              ports: ${{ inputs.VectorDB-ports }}
+
+        - if: inputs.DB-name=='VectorDB'
+          name: Modify IGinX Config
+          uses: ./.github/actions/edit
+          with:
+              paths: conf/config.properties
+              statements: s/^#storageEngineList=127.0.0.1#19530/storageEngineList=127.0.0.1#19530/g
+
+        - if: inputs.DB-name=='VectorDB'
+          name: Modify IGinX Config
+          uses: ./.github/actions/edit
+          with:
+              paths: conf/config.properties
+              statements: s/^#storageEngineList=192.168.106.2#19530/storageEngineList=192.168.106.2#19530/g
+
         - if: inputs.DB-name=='FileSystem'
           name: Run DB
           shell: bash
@@ -188,7 +215,7 @@ runs:
           with:
               paths: conf/config.properties
               statements: |
-                  s/^#storageEngineList=127.0.0.1#6667#filesystem/storageEngineList=127.0.0.1#6667#filesystem/g
+                  s/^#storageEngineList=127.0.0.1#[0-9]*#filesystem/storageEngineList=127.0.0.1#6668#filesystem/g
                   s#dir=data#dir=${{ steps.project.outputs.workspace }}/test/iginx_mn#g
                   s#dummy_dir=dummy#dummy_dir=${{ steps.project.outputs.workspace }}/test/mn#g
                   s/data.config.write.buffer.size=104857600/data.config.write.buffer.size=1048576/g
