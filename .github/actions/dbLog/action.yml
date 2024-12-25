@@ -30,6 +30,9 @@ runs:
               docker ps
               netstat -lnp|grep 1953
               docker-compose -f 19530/docker-compose-19530.yml logs
+              du -sh /volumes/milvus
+              du -sh /volumes/etcd
+              du -sh /volumes/minio
 
         - if: ${{ inputs.DB-name == 'VectorDB' && runner.os == 'Windows' }}
           name: Show Milvus Log on Windows
