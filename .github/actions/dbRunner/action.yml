@@ -38,9 +38,9 @@ inputs:
         required: false
         default: 19530
     Neo4j-ports:
-      description: "Neo4j ports"
-      required: false
-      default: 7687
+        description: "Neo4j ports"
+        required: false
+        default: 7687
 
 runs:
     using: "composite" # Mandatory parameter
@@ -167,7 +167,7 @@ runs:
           name: Run Neo4j DB
           uses: ./.github/actions/service/neo4j
           with:
-            stop: false
-            clean: false
-            start: true
-            ports: 7687
+              stop: false
+              clean: false
+              start: true
+              ports: 7687
