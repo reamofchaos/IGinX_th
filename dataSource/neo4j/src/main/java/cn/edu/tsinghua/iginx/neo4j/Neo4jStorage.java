@@ -336,12 +336,12 @@ public class Neo4jStorage implements IStorage {
               row.put(propertyNames[j], obj);
             }
           }
-          cnt += size;
+
         }
 
         for (Map.Entry<String, Map<Long, Map<String, Object>>> labels : labelToRowData.entrySet()) {
           String labelName = labels.getKey();
-          if (cnt == size) {
+          if (cnt == 0) {
             Neo4jClientUtils.checkAndCreateUniqueConstraint(
                 session, labelName, IDENTITY_PROPERTY_NAME);
           }
@@ -350,6 +350,7 @@ public class Neo4jStorage implements IStorage {
           Collection<Map<String, Object>> dataList = dataMap.values();
           Neo4jClientUtils.bulkInsert(session, labelName, IDENTITY_PROPERTY_NAME, dataList);
         }
+        cnt += size;
       }
     } catch (Exception e) {
       LOGGER.error("unexpected error: ", e);
