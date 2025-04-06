@@ -34,10 +34,7 @@ import cn.edu.tsinghua.iginx.engine.physical.task.TaskExecuteResult;
 import cn.edu.tsinghua.iginx.engine.shared.KeyRange;
 import cn.edu.tsinghua.iginx.engine.shared.data.write.DataView;
 import cn.edu.tsinghua.iginx.engine.shared.data.write.RowDataView;
-import cn.edu.tsinghua.iginx.engine.shared.operator.Delete;
-import cn.edu.tsinghua.iginx.engine.shared.operator.Insert;
-import cn.edu.tsinghua.iginx.engine.shared.operator.Project;
-import cn.edu.tsinghua.iginx.engine.shared.operator.Select;
+import cn.edu.tsinghua.iginx.engine.shared.operator.*;
 import cn.edu.tsinghua.iginx.engine.shared.operator.filter.AndFilter;
 import cn.edu.tsinghua.iginx.engine.shared.operator.filter.Filter;
 import cn.edu.tsinghua.iginx.engine.shared.operator.filter.KeyFilter;
@@ -435,6 +432,29 @@ public class Neo4jStorage implements IStorage {
     } catch (Exception e) {
       throw new PhysicalException(String.format("execute query task in neo4j failure : %s", e));
     }
+  }
+
+  @Override
+  public TaskExecuteResult executeProjectDummyWithAggSelect(
+      Project project, Select select, Operator agg, DataArea dataArea) {
+    return null;
+  }
+
+  @Override
+  public TaskExecuteResult executeProjectWithAgg(Project project, Operator agg, DataArea dataArea) {
+    return null;
+  }
+
+  @Override
+  public TaskExecuteResult executeProjectDummyWithAgg(
+      Project project, Operator agg, DataArea dataArea) {
+    return null;
+  }
+
+  @Override
+  public TaskExecuteResult executeProjectWithAggSelect(
+      Project project, Select select, Operator agg, DataArea dataArea) {
+    return null;
   }
 
   @Override

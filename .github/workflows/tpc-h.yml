@@ -7,7 +7,7 @@ on:
                 description: "The java version to run the test on"
                 type: string
                 required: false
-                default: '["8"]'
+                default: '["17"]'
             python-matrix:
                 description: "The python version to run the test on"
                 type: string
@@ -27,7 +27,7 @@ on:
                 description: "The database to run the test on"
                 type: string
                 required: false
-                default: '["IoTDB12", "InfluxDB", "FileSystem", "PostgreSQL", "Redis", "MongoDB", "MySQL"]'
+                default: '["IoTDB12", "InfluxDB", "FileSystem", "PostgreSQL", "Redis", "MongoDB", "MySQL", "Dameng"]'
             close-optimizer:
                 description: "Whether to close the optimizer"
                 type: string
@@ -38,6 +38,11 @@ on:
                 type: number
                 required: false
                 default: 60
+            agg-pushdown-matrix:
+                description: "The database which support agg push down"
+                type: string
+                required: false
+                default: '["PostgreSQL", "MYSQL", "Dameng"]'
 
 jobs:
     TPC-H-Test:
@@ -120,16 +125,21 @@ jobs:
               with:
                   DB-name: ${{ matrix.DB-name }}
                   Close-Optimizer: ${{ inputs.close-optimizer }}
+                  Set-ColumnPruning-ON: ${{ toJSON(inputs.close-optimizer == 'true' && matrix.DB-name == 'InfluxDB') }}
                   Metadata: ${{ matrix.metadata }}
+                  Set-AggPushDown-OFF: ${{ toJSON(!contains(inputs.agg-pushdown-matrix, matrix.DB-name)) }}
 
             - name: Change Old IGinX Config
               uses: ./.github/actions/confWriter
               with:
                   DB-name: ${{ matrix.DB-name }}
+                  Open-Optimizer: "true"
                   Close-Optimizer: ${{ inputs.close-optimizer }}
+                  Set-ColumnPruning-ON: ${{ toJSON(inputs.close-optimizer == 'true' && matrix.DB-name == 'InfluxDB') }}
                   Metadata: ${{ matrix.metadata }}
                   zookeeper-port: 2182
                   Root-Dir-Path: "IGinX"
+                  Set-AggPushDown-OFF: ${{ toJSON(!contains(inputs.agg-pushdown-matrix, matrix.DB-name)) }}
 
             - name: Download TPC-H Data
               shell: bash
