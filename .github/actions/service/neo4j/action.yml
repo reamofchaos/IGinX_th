@@ -69,3 +69,16 @@ runs:
 
                 sleep 10
               done
+
+
+        - if : runner.os != 'Windows'
+          name: Network test
+          shell: bash
+          run: |
+              for port in ${{ inputs.ports }}; do
+                if netstat -an | grep -q ".*:$port.*LISTEN"; then
+                  echo "Port $port is open."
+                else
+                  echo "Port $port is not open."
+                fi
+              done
