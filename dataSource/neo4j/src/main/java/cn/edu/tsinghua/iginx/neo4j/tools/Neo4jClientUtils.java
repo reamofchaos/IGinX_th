@@ -50,7 +50,7 @@ public class Neo4jClientUtils {
     Result result =
         session.run(
             "SHOW CONSTRAINTS WHERE type = 'UNIQUENESS' AND labelsOrTypes = [$label] AND properties = [$property]",
-            parameters("label", getQuotName(label), "property", getQuotName(property)));
+            parameters("label", label, "property", property));
     return result.hasNext();
   }
 
