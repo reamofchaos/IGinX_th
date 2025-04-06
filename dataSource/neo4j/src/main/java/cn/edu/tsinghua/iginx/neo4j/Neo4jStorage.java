@@ -115,7 +115,7 @@ public class Neo4jStorage implements IStorage {
   @Override
   public boolean testConnection(StorageEngineMeta meta) {
     try (Session session = driver.session()) {
-      String result = session.run("RETURN 1").single().get(0).asString();
+      String result = session.run("RETURN '1'").single().get(0).asString();
       if ("1".equals(result)) {
         return true;
       }
