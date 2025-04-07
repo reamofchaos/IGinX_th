@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
+import org.neo4j.driver.internal.value.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -306,14 +307,18 @@ public class Neo4jClientUtils {
       List<Column> columns = new ArrayList<>();
       for (String property : properties.keySet()) {
         String pathName = label + SEPARATOR + property;
-        DataType type = fromStringDataType(properties.get(property));
+        DataType type = fromStringDataType(properties.get(property).toUpperCase());
         Map<Long, Object> data = new HashMap<>();
         for (Record record : records) {
-          data.put(
-              record.get(IDENTITY_PROPERTY_NAME).asLong(),
-              "String".equals(properties.get(property))
-                  ? record.get(property).asString()
-                  : record.get(property));
+          if (record.get(property) != null
+              && !record.get(property).isNull()
+              && !(record.get(property) instanceof NullValue)) {
+            data.put(
+                record.get(IDENTITY_PROPERTY_NAME).asLong(),
+                "String".equals(properties.get(property))
+                    ? record.get(property).asString()
+                    : transform(record.get(property)));
+          }
         }
         Column c = new Column(pathName, type, data);
         columns.add(c);
@@ -323,6 +328,18 @@ public class Neo4jClientUtils {
     } catch (Exception e) {
       LOGGER.error("unexpected error: ", e);
       return new ArrayList<>();
+    }
+  }
+
+  public static Object transform(Object value) {
+    if (value instanceof org.neo4j.driver.internal.value.IntegerValue) {
+      return ((IntegerValue) value).asLong();
+    } else if (value instanceof org.neo4j.driver.internal.value.FloatValue) {
+      return ((FloatValue) value).asDouble();
+    } else if (value instanceof org.neo4j.driver.internal.value.BooleanValue) {
+      return ((BooleanValue) value).asBoolean();
+    } else {
+      return value.toString();
     }
   }
 

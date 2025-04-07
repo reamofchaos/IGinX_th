@@ -70,8 +70,7 @@ runs:
                 sleep 10
               done
 
-
-        - if : runner.os != 'Windows'
+        - if: runner.os != 'Windows'
           name: Network test
           shell: bash
           run: |

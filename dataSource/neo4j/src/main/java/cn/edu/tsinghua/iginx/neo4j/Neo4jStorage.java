@@ -336,7 +336,6 @@ public class Neo4jStorage implements IStorage {
               row.put(propertyNames[j], obj);
             }
           }
-
         }
 
         for (Map.Entry<String, Map<Long, Map<String, Object>>> labels : labelToRowData.entrySet()) {
