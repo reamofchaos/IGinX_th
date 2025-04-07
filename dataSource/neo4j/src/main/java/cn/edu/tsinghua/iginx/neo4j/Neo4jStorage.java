@@ -21,6 +21,7 @@ package cn.edu.tsinghua.iginx.neo4j;
 
 import static cn.edu.tsinghua.iginx.constant.GlobalConstant.SEPARATOR;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.IDENTITY_PROPERTY_NAME;
+import static cn.edu.tsinghua.iginx.neo4j.tools.DataTransformer.fromIginxType;
 import static cn.edu.tsinghua.iginx.neo4j.tools.DataTransformer.fromStringDataType;
 import static cn.edu.tsinghua.iginx.neo4j.tools.TagKVUtils.splitFullName;
 
@@ -333,7 +334,7 @@ public class Neo4jStorage implements IStorage {
                         r.put(IDENTITY_PROPERTY_NAME, k);
                         return r;
                       });
-              row.put(propertyNames[j], obj);
+              row.put(propertyNames[j], fromIginxType(obj));
             }
           }
         }

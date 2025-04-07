@@ -144,4 +144,14 @@ public class DataTransformer {
     }
     return value;
   }
+
+  public static Object fromIginxType(Object value) {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof byte[]) {
+      return new String((byte[]) value, StandardCharsets.UTF_8);
+    }
+    return value;
+  }
 }
