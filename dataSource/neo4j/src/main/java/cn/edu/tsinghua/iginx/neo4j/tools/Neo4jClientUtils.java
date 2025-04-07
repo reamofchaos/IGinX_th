@@ -23,6 +23,7 @@ import static cn.edu.tsinghua.iginx.constant.GlobalConstant.SEPARATOR;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.IDENTITY_PROPERTY_NAME;
 import static cn.edu.tsinghua.iginx.neo4j.tools.DataTransformer.fromStringDataType;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jSchema.getQuotName;
+import static cn.edu.tsinghua.iginx.neo4j.tools.RegexEscaper.escapeRegex;
 import static cn.edu.tsinghua.iginx.neo4j.tools.TagKVUtils.splitFullName;
 import static org.neo4j.driver.Values.parameters;
 
@@ -144,7 +145,7 @@ public class Neo4jClientUtils {
         label = ".*";
         property = ".*";
       } else if (pattern.split("\\" + SEPARATOR).length == 1) { // REST 查询的路径中可能不含 .
-        label = pattern;
+        label = escapeRegex(pattern);
         property = ".*";
       } else {
         Neo4jSchema schema = new Neo4jSchema(pattern, false);
@@ -152,11 +153,11 @@ public class Neo4jClientUtils {
         property = schema.getPropertyName();
         boolean propertyEqualsStar = property.startsWith("*");
         boolean labelContainsStar = label.contains("*");
-        label = label.replace(".", "\\.").replace("*", ".*");
+        label = escapeRegex(label).replace("\\*", ".*");
         if (propertyEqualsStar && !label.endsWith("*")) {
           label += ".*";
         }
-        property = property.replace("*", ".*");
+        property = escapeRegex(property).replace("\\*", ".*");
       }
 
       if (!property.endsWith("*")) {
