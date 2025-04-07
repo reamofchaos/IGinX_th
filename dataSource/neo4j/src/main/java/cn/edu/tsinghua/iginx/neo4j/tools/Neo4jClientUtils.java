@@ -153,9 +153,9 @@ public class Neo4jClientUtils {
         boolean propertyEqualsStar = property.startsWith("*");
         boolean labelContainsStar = label.contains("*");
         label = label.replace(".", "\\.").replace("*", ".*");
-        //                if (propertyEqualsStar && !label.endsWith("*")) {
-        //                    label += ".*";
-        //                }
+        if (propertyEqualsStar && !label.endsWith("*")) {
+          label += ".*";
+        }
         property = property.replace("*", ".*");
       }
 
