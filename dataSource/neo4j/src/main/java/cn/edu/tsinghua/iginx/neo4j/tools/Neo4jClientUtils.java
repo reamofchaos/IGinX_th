@@ -68,7 +68,6 @@ public class Neo4jClientUtils {
         result.consume(); // 确保操作完成
         return checkConstraintExists(session, label, property); // 二次验证
       } catch (Exception e) {
-        LOGGER.error("Failed to create unique constraint: ", e);
         return false;
       }
     }
@@ -363,7 +362,6 @@ public class Neo4jClientUtils {
               try {
                 session.run(dropQuery);
               } catch (Exception e) {
-                LOGGER.error("Failed to drop constraint: {}", e.getMessage());
               }
             });
   }

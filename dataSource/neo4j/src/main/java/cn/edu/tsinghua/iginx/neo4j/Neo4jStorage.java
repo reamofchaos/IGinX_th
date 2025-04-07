@@ -152,7 +152,7 @@ public class Neo4jStorage implements IStorage {
       Project project, Filter filter, DataArea dataArea) {
     try (Session session = driver.session()) {
       List<String> patterns = project.getPatterns();
-      if (patterns == null) {
+      if (patterns == null || patterns.isEmpty()) {
         patterns = Arrays.asList("*");
       }
 
@@ -178,7 +178,7 @@ public class Neo4jStorage implements IStorage {
   private TaskExecuteResult executeProjectDummyWithFilter(Project project, Filter filter) {
     try (Session session = driver.session()) {
       List<String> patterns = project.getPatterns();
-      if (patterns == null) {
+      if (patterns == null || patterns.isEmpty()) {
         patterns = Arrays.asList("*");
       }
 
@@ -363,7 +363,7 @@ public class Neo4jStorage implements IStorage {
   public List<Column> getColumns(Set<String> patterns, TagFilter tagFilter)
       throws PhysicalException {
     try (Session session = driver.session()) {
-      if (patterns == null) {
+      if (patterns == null || patterns.size() == 0) {
         patterns = new HashSet<>();
         patterns.add("*");
       }
