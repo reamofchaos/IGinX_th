@@ -78,7 +78,7 @@ public class DataTransformer {
     if (dataType == null) {
       return null;
     }
-    switch (dataType) {
+    switch (dataType.toUpperCase()) {
       case "BOOLEAN":
         return DataType.BOOLEAN;
       case "INTEGER":

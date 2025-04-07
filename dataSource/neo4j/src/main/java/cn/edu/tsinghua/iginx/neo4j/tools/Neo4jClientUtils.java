@@ -343,11 +343,10 @@ public class Neo4jClientUtils {
   }
 
   public static boolean clearDatabase(Session session) {
-//    String query = "MATCH (n) DETACH DELETE n";
-    String query = "CALL { MATCH (n) DETACH DELETE n } IN TRANSACTIONS OF 100000 ROWS;";
+    clearConstraint(session);
+    String query = "CALL { MATCH (n) DETACH DELETE n } IN TRANSACTIONS OF 10000 ROWS;";
     LOGGER.info("query: {}", query);
     session.run(query).consume();
-    clearConstraint(session);
     return true;
   }
 
@@ -361,7 +360,7 @@ public class Neo4jClientUtils {
               String dropQuery = String.format("DROP CONSTRAINT %s", constraintName);
 
               try {
-                session.run(dropQuery);
+                session.run(dropQuery).consume();
               } catch (Exception e) {
               }
             });
