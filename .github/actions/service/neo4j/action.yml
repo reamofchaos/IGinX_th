@@ -35,6 +35,7 @@ runs:
 
                 sed -i"" -e "s/#server.http.listen_address=:7474/server.http.listen_address=:1$port/g" $instance_dir/conf/neo4j.conf
                 sed -i"" -e "s/#server.bolt.listen_address=:7687/server.bolt.listen_address=:$port/g" $instance_dir/conf/neo4j.conf
+                sed -i"" -e "s/#dbms.memory.transaction.total.max=256m/dbms.memory.transaction.total.max=4G/g" $instance_dir/conf/neo4j.conf
 
                 chmod +x $instance_dir/bin/neo4j
                 chmod +x $instance_dir/bin/neo4j-admin

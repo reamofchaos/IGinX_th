@@ -343,7 +343,8 @@ public class Neo4jClientUtils {
   }
 
   public static boolean clearDatabase(Session session) {
-    String query = "MATCH (n) DETACH DELETE n";
+//    String query = "MATCH (n) DETACH DELETE n";
+    String query = "CALL { MATCH (n) DETACH DELETE n } IN TRANSACTIONS OF 100000 ROWS;";
     LOGGER.info("query: {}", query);
     session.run(query).consume();
     clearConstraint(session);
