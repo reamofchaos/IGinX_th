@@ -22,7 +22,7 @@ package cn.edu.tsinghua.iginx.neo4j.tools;
 import static cn.edu.tsinghua.iginx.constant.GlobalConstant.SEPARATOR;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.IDENTITY_PROPERTY_NAME;
 import static cn.edu.tsinghua.iginx.neo4j.tools.DataTransformer.fromStringDataType;
-import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jSchema.getQuotName;
+import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jSchema.getQuoteName;
 import static cn.edu.tsinghua.iginx.neo4j.tools.RegexEscaper.escapeRegex;
 import static cn.edu.tsinghua.iginx.neo4j.tools.TagKVUtils.splitFullName;
 import static org.neo4j.driver.Values.parameters;
@@ -63,7 +63,7 @@ public class Neo4jClientUtils {
       String query =
           String.format(
               "CREATE CONSTRAINT FOR (n:%s) REQUIRE n.%s IS UNIQUE",
-              getQuotName(label), getQuotName(property));
+              getQuoteName(label), getQuoteName(property));
       try {
         Result result = session.run(query);
         result.consume(); // 确保操作完成
@@ -85,7 +85,7 @@ public class Neo4jClientUtils {
                   + "MERGE (n:%s {%s: node.%s}) "
                   + "ON CREATE SET n += node.properties "
                   + "ON MATCH SET n += node.properties",
-              getQuotName(label), idProperty, idProperty);
+              getQuoteName(label), idProperty, idProperty);
       Map<String, Object> params = new HashMap();
       params.put(
           "nodes",
@@ -263,39 +263,41 @@ public class Neo4jClientUtils {
       boolean isDummy) {
     try {
       String expr = "";
+      String quotedLabel = getQuoteName(label);
       if (!FilterUtils.filterContainsType(
           Arrays.asList(FilterType.Value, FilterType.Path), filter)) {
         if (isDummy) {
-          expr = new FilterTransformer("id(n)").toString(FilterUtils.expandFilter(filter, "id(n)"));
+          expr = new FilterTransformer("id("+quotedLabel+")").toString(FilterUtils.expandFilter(filter, "id("+quotedLabel+")"));
         } else {
           expr =
-              new FilterTransformer("n.`" + IDENTITY_PROPERTY_NAME + "`")
-                  .toString(FilterUtils.expandFilter(filter, "n.`" + IDENTITY_PROPERTY_NAME + "`"));
+              new FilterTransformer(quotedLabel+".`" + IDENTITY_PROPERTY_NAME + "`")
+                  .toString(FilterUtils.expandFilter(filter, quotedLabel+".`" + IDENTITY_PROPERTY_NAME + "`"));
         }
         expr = "WHERE " + expr + " ";
       }
+
 
       StringBuilder r = new StringBuilder();
       if (isDummy) {
         String keyProperty = getUniqueConstraintName(session, label, properties);
         if (keyProperty == null) {
-          r.append("id(n) as ").append(IDENTITY_PROPERTY_NAME);
+          r.append("id("+quotedLabel+") as ").append(IDENTITY_PROPERTY_NAME);
         } else {
-          r.append("n.`").append(keyProperty).append("` as ").append(IDENTITY_PROPERTY_NAME);
+          r.append(quotedLabel+".`").append(keyProperty).append("` as ").append(IDENTITY_PROPERTY_NAME);
           properties.remove(keyProperty);
         }
       } else {
-        r.append("n.`")
+        r.append(quotedLabel +".`")
             .append(IDENTITY_PROPERTY_NAME)
             .append("` as ")
             .append(IDENTITY_PROPERTY_NAME);
         properties.remove(IDENTITY_PROPERTY_NAME);
       }
       for (String property : properties.keySet()) {
-        r.append(",n.").append(getQuotName(property)).append(" as ").append(getQuotName(property));
+        r.append(","+quotedLabel+".").append(getQuoteName(property)).append(" as ").append(getQuoteName(property));
       }
 
-      String query = "Match (n:" + getQuotName(label) + ") " + expr + "RETURN " + r;
+      String query = "Match (" + quotedLabel + ":" + quotedLabel + ") " + expr + "RETURN " + r;
       LOGGER.info("query: {}", query);
       List<Record> records =
           session.readTransaction(
@@ -345,8 +347,10 @@ public class Neo4jClientUtils {
 
   public static boolean clearDatabase(Session session) {
     clearConstraint(session);
-//    session.run("MATCH ()-[r]->() CALL { WITH r DELETE r } IN TRANSACTIONS OF 1000 ROWS;").consume();
-    String query = "CALL apoc.periodic.iterate(\"MATCH (n) RETURN n\", \"DETACH DELETE n\",  {batchSize: 5000})";
+    //    session.run("MATCH ()-[r]->() CALL { WITH r DELETE r } IN TRANSACTIONS OF 1000
+    // ROWS;").consume();
+    String query =
+        "CALL apoc.periodic.iterate(\"MATCH (n) RETURN n\", \"DETACH DELETE n\",  {batchSize: 5000})";
     LOGGER.info("query: {}", query);
     session.run(query).consume();
     return true;

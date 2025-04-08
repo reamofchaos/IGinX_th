@@ -32,7 +32,7 @@ runs:
                 instance_dir="./neo4j_instances/$port"
                 mkdir -p $instance_dir
                 tar -xzf neo4j.tar.gz --strip-components=1 -C $instance_dir
-            
+
                 mkdir -p $instance_dir/plugins/
                 cp apoc.jar $instance_dir/plugins/
                 echo "ls $instance_dir/plugins/"
@@ -71,7 +71,7 @@ runs:
                 dir $instance_dir/neo4j-community-5.26.5
                 mv $instance_dir/neo4j*/* $instance_dir
                 dir $instance_dir
-            
+
                 mkdir -p $instance_dir/plugins/
                 cp apoc.jar $instance_dir/plugins/
 

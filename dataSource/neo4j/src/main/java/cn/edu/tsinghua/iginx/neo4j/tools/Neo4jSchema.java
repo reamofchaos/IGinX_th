@@ -54,16 +54,20 @@ public class Neo4jSchema {
     return propertyName;
   }
 
-  private static String getQuotName(String name, char quote) {
+  private static String getQuoteName(String name, char quote) {
     return quote + name + quote;
   }
 
-  public static String getQuotName(String name) {
+  public static String getQuoteName(String name) {
     return quote + name + quote;
   }
 
   public static String getQuoteFullName(String labelName, String propertyName) {
-    return getQuotName(labelName) + SEPARATOR + getQuotName(propertyName);
+    return getQuoteName(labelName) + SEPARATOR + getQuoteName(propertyName);
+  }
+
+  public String getFullName() {
+    return getQuoteFullName(labelName, propertyName);
   }
 
   public static String getFullName(String tableName, String columnName) {
