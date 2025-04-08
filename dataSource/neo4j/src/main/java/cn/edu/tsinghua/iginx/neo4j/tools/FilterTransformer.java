@@ -28,6 +28,7 @@ public class FilterTransformer {
 
   private String key;
   private String label;
+
   public FilterTransformer(String key, String label) {
     this.key = key;
     this.label = label;

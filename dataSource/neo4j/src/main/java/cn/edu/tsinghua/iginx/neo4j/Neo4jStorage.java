@@ -157,7 +157,7 @@ public class Neo4jStorage implements IStorage {
       }
 
       Map<String, Map<String, String>> labelToProperties =
-          Neo4jClientUtils.splitAndMergeQueryPatterns(session, patterns);
+          Neo4jClientUtils.determinePaths(session, patterns, project.getTagFilter());
 
       List<cn.edu.tsinghua.iginx.neo4j.entity.Column> columns = new ArrayList<>();
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
@@ -183,7 +183,7 @@ public class Neo4jStorage implements IStorage {
       }
 
       Map<String, Map<String, String>> labelToProperties =
-          Neo4jClientUtils.splitAndMergeQueryPatterns(session, patterns);
+          Neo4jClientUtils.determinePaths(session, patterns, project.getTagFilter());
 
       List<cn.edu.tsinghua.iginx.neo4j.entity.Column> columns = new ArrayList<>();
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
@@ -403,7 +403,7 @@ public class Neo4jStorage implements IStorage {
       patterns.add("*");
 
       Map<String, Map<String, String>> labelToProperties =
-          Neo4jClientUtils.splitAndMergeQueryPatterns(session, patterns);
+          Neo4jClientUtils.determinePaths(session, patterns, null);
 
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
         for (Map.Entry<String, String> property : entry.getValue().entrySet()) {
