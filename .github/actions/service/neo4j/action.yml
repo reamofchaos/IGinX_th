@@ -52,7 +52,7 @@ runs:
 
                 $instance_dir/bin/neo4j-admin dbms set-initial-password neo4jtest
 
-                nohup $instance_dir/bin/neo4j console > neo4j1.log 2>&1 &
+                nohup $instance_dir/bin/neo4j console > neo4j$port.log 2>&1 &
                 sleep 10
               done
 

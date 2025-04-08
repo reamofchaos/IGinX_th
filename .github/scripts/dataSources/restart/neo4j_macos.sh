@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # IGinX - the polystore system with high performance
 # Copyright (C) Tsinghua University
@@ -21,9 +21,3 @@ port=$1
 pwd
 nohup ./neo4j_instances/$port/bin/neo4j console > neo4j$port.log 2>&1 &
 sleep 10
-
-if netstat -an | grep -q ".*:$port.*LISTEN"; then
-  echo "Port $port is open."
-else
-  echo "Port $port is not open."
-fi

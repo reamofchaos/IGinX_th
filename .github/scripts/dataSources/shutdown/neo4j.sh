@@ -19,8 +19,8 @@
 
 port=$1
 pwd
-nohup ./neo4j_instances/$port/bin/neo4j console > neo4j$port.log 2>&1 &
-sleep 10
+./neo4j_instances/$port/bin/neo4j stop
+sleep 5
 
 if netstat -an | grep -q ".*:$port.*LISTEN"; then
   echo "Port $port is open."
