@@ -42,7 +42,10 @@ public class Neo4jCapacityExpansionIT extends BaseCapacityExpansionIT {
   private static final Logger LOGGER = LoggerFactory.getLogger(Neo4jCapacityExpansionIT.class);
 
   public Neo4jCapacityExpansionIT() {
-    super(StorageEngineType.neo4j, "username=neo4j, password=neo4jtest", new Neo4jHistoryDataGenerator());
+    super(
+        StorageEngineType.neo4j,
+        "username=neo4j, password=neo4jtest",
+        new Neo4jHistoryDataGenerator());
     ConfLoader conf = new ConfLoader(Controller.CONFIG_FILE);
     DBConf dbConf = conf.loadDBConf(conf.getStorageType());
     Constant.oriPort = dbConf.getDBCEPortMap().get(Constant.ORI_PORT_NAME);
