@@ -266,18 +266,17 @@ public class Neo4jClientUtils {
       LOGGER.info("label: "+label);
       LOGGER.info("properties: "+properties);
       LOGGER.info("filter: "+ filter);
-
       String expr = "";
       String quotedLabel = getQuoteName(label);
       if (!FilterUtils.filterContainsType(
           Arrays.asList(FilterType.Value, FilterType.Path), filter)) {
         if (isDummy) {
           expr =
-              new FilterTransformer("id(" + quotedLabel + ")")
+              new FilterTransformer("id(" + quotedLabel + ")", label)
                   .toString(FilterUtils.expandFilter(filter, "id(" + quotedLabel + ")"));
         } else {
           expr =
-              new FilterTransformer(quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`")
+              new FilterTransformer(quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`", label)
                   .toString(
                       FilterUtils.expandFilter(
                           filter, quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`"));

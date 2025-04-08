@@ -27,9 +27,10 @@ import java.util.stream.Collectors;
 public class FilterTransformer {
 
   private String key;
-
-  public FilterTransformer(String key) {
+  private String label;
+  public FilterTransformer(String key, String label) {
     this.key = key;
+    this.label = label;
   }
 
   public String toString(Filter filter) {
@@ -100,7 +101,12 @@ public class FilterTransformer {
             ? "'" + filter.getValue().getBinaryVAsString() + "'"
             : filter.getValue().getValue();
 
-    return new Neo4jSchema(path).getFullName() + " " + op + " " + value;
+    Neo4jSchema schema = new Neo4jSchema(path);
+    if (!schema.getLabelName().equals(this.label)) {
+      return "";
+    }
+
+    return schema.getFullName() + " " + op + " " + value;
   }
 
   private String toString(OrFilter filter) {
@@ -124,6 +130,11 @@ public class FilterTransformer {
         Op.op2StrWithoutAndOr(filter.getOp())
             .replace("==", "="); // postgresql does not support "==" but uses "=" instead
 
+    Neo4jSchema schemaA = new Neo4jSchema(filter.getPathA());
+    Neo4jSchema schemaB = new Neo4jSchema(filter.getPathB());
+    if (!schemaA.getLabelName().equals(this.label) || !schemaB.getLabelName().equals(this.label)) {
+      return "";
+    }
     return new Neo4jSchema(filter.getPathA()).getFullName()
         + " "
         + op
@@ -149,6 +160,11 @@ public class FilterTransformer {
                 .map(Object::toString)
                 .collect(Collectors.joining(","))
             + "]";
+
+    Neo4jSchema schema = new Neo4jSchema(path);
+    if (!schema.getLabelName().equals(this.label)) {
+      return "";
+    }
     return (filter.getInOp().isNotOp() ? "not " : "")
         + new Neo4jSchema(path).getFullName()
         + " in "
