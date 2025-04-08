@@ -170,4 +170,4 @@ runs:
               stop: false
               clean: false
               start: true
-              ports: 7687
+              ports: ${{ inputs.Neo4j-ports }}
