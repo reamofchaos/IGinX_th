@@ -269,7 +269,7 @@ public class Neo4jClientUtils {
       String expr = "";
       String quotedLabel = getQuoteName(label);
       if (!FilterUtils.filterContainsType(
-          Arrays.asList(FilterType.Value, FilterType.Path), filter)) {
+          Arrays.asList(FilterType.Value, FilterType.Path, FilterType.In), filter)) {
         if (isDummy) {
           expr =
               new FilterTransformer("id(" + quotedLabel + ")", label)
