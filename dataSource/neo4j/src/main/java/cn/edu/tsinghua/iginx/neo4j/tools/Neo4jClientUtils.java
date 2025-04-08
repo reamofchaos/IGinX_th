@@ -37,6 +37,7 @@ import cn.edu.tsinghua.iginx.thrift.DataType;
 import cn.edu.tsinghua.iginx.utils.Pair;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
@@ -267,34 +268,45 @@ public class Neo4jClientUtils {
       if (!FilterUtils.filterContainsType(
           Arrays.asList(FilterType.Value, FilterType.Path), filter)) {
         if (isDummy) {
-          expr = new FilterTransformer("id("+quotedLabel+")").toString(FilterUtils.expandFilter(filter, "id("+quotedLabel+")"));
+          expr =
+              new FilterTransformer("id(" + quotedLabel + ")")
+                  .toString(FilterUtils.expandFilter(filter, "id(" + quotedLabel + ")"));
         } else {
           expr =
-              new FilterTransformer(quotedLabel+".`" + IDENTITY_PROPERTY_NAME + "`")
-                  .toString(FilterUtils.expandFilter(filter, quotedLabel+".`" + IDENTITY_PROPERTY_NAME + "`"));
+              new FilterTransformer(quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`")
+                  .toString(
+                      FilterUtils.expandFilter(
+                          filter, quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`"));
         }
-        expr = "WHERE " + expr + " ";
+        if (StringUtils.isNotEmpty(expr)) {
+          expr = "WHERE " + expr + " ";
+        }
       }
-
 
       StringBuilder r = new StringBuilder();
       if (isDummy) {
         String keyProperty = getUniqueConstraintName(session, label, properties);
         if (keyProperty == null) {
-          r.append("id("+quotedLabel+") as ").append(IDENTITY_PROPERTY_NAME);
+          r.append("id(" + quotedLabel + ") as ").append(IDENTITY_PROPERTY_NAME);
         } else {
-          r.append(quotedLabel+".`").append(keyProperty).append("` as ").append(IDENTITY_PROPERTY_NAME);
+          r.append(quotedLabel + ".`")
+              .append(keyProperty)
+              .append("` as ")
+              .append(IDENTITY_PROPERTY_NAME);
           properties.remove(keyProperty);
         }
       } else {
-        r.append(quotedLabel +".`")
+        r.append(quotedLabel + ".`")
             .append(IDENTITY_PROPERTY_NAME)
             .append("` as ")
             .append(IDENTITY_PROPERTY_NAME);
         properties.remove(IDENTITY_PROPERTY_NAME);
       }
       for (String property : properties.keySet()) {
-        r.append(","+quotedLabel+".").append(getQuoteName(property)).append(" as ").append(getQuoteName(property));
+        r.append("," + quotedLabel + ".")
+            .append(getQuoteName(property))
+            .append(" as ")
+            .append(getQuoteName(property));
       }
 
       String query = "Match (" + quotedLabel + ":" + quotedLabel + ") " + expr + "RETURN " + r;

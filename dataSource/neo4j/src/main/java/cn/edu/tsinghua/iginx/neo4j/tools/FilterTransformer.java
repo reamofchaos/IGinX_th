@@ -124,7 +124,11 @@ public class FilterTransformer {
         Op.op2StrWithoutAndOr(filter.getOp())
             .replace("==", "="); // postgresql does not support "==" but uses "=" instead
 
-    return new Neo4jSchema(filter.getPathA()).getFullName() + " " + op + " " + new Neo4jSchema(filter.getPathB()).getFullName();
+    return new Neo4jSchema(filter.getPathA()).getFullName()
+        + " "
+        + op
+        + " "
+        + new Neo4jSchema(filter.getPathB()).getFullName();
   }
 
   private String toString(InFilter filter) {
