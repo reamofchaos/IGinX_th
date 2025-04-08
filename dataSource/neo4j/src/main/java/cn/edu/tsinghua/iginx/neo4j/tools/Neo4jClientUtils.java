@@ -263,6 +263,10 @@ public class Neo4jClientUtils {
       Filter filter,
       boolean isDummy) {
     try {
+      LOGGER.info("label: "+label);
+      LOGGER.info("properties: "+properties);
+      LOGGER.info("filter: "+ filter);
+
       String expr = "";
       String quotedLabel = getQuoteName(label);
       if (!FilterUtils.filterContainsType(

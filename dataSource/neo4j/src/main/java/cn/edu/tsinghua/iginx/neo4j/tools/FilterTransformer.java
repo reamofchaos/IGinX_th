@@ -149,7 +149,10 @@ public class FilterTransformer {
                 .map(Object::toString)
                 .collect(Collectors.joining(","))
             + "]";
-    return (filter.getInOp().isNotOp() ? "not " : "") + new Neo4jSchema(path).getFullName() + " in " + values;
+    return (filter.getInOp().isNotOp() ? "not " : "")
+        + new Neo4jSchema(path).getFullName()
+        + " in "
+        + values;
   }
 
   private String getQuotName(String name) {
