@@ -326,6 +326,7 @@ public class Neo4jClientUtils {
         String pathName = label + SEPARATOR + property;
         DataType type = fromStringDataType(properties.get(property).toUpperCase());
         Map<Long, Object> data = new HashMap<>();
+        LOGGER.info("records size : "+records.size());
         for (Record record : records) {
           if (record.get(property) != null
               && !record.get(property).isNull()
@@ -337,6 +338,7 @@ public class Neo4jClientUtils {
                     : transform(record.get(property)));
           }
         }
+        LOGGER.info("data size : "+data.size());
         Column c = new Column(pathName, type, data);
         columns.add(c);
       }
