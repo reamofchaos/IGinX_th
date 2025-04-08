@@ -59,6 +59,7 @@ public class Neo4jSchema {
   }
 
   public static String getQuoteName(String name) {
+    name = name.replaceFirst("^" + quote, "").replaceFirst(quote + "$", "");
     return quote + name + quote;
   }
 
