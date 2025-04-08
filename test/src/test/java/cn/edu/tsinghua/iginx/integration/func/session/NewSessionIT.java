@@ -356,7 +356,7 @@ public class NewSessionIT {
       boolean actualVal = (boolean) actual;
       assertEquals(expectedVal, actualVal);
     } else if (expected instanceof Integer) {
-      if (isInfluxdb) {
+      if (isInfluxdb || isNeo4j) {
         long expectedVal = ((Integer) expected).longValue();
         long actualVal = (long) actual;
         assertEquals(expectedVal, actualVal);
@@ -370,7 +370,7 @@ public class NewSessionIT {
       long actualVal = (long) actual;
       assertEquals(expectedVal, actualVal);
     } else if (expected instanceof Float) {
-      if (isInfluxdb) {
+      if (isInfluxdb || isNeo4j) {
         double expectedVal = ((Float) expected).doubleValue();
         double actualVal = (double) actual;
         assertEquals(expectedVal, actualVal, expectedVal * DELTA);
