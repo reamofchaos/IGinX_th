@@ -263,9 +263,6 @@ public class Neo4jClientUtils {
       Filter filter,
       boolean isDummy) {
     try {
-      LOGGER.info("label: "+label);
-      LOGGER.info("properties: "+properties);
-      LOGGER.info("filter: "+ filter);
       String expr = "";
       String quotedLabel = getQuoteName(label);
       if (!FilterUtils.filterContainsType(
@@ -326,7 +323,6 @@ public class Neo4jClientUtils {
         String pathName = label + SEPARATOR + property;
         DataType type = fromStringDataType(properties.get(property).toUpperCase());
         Map<Long, Object> data = new HashMap<>();
-        LOGGER.info("records size : "+records.size());
         for (Record record : records) {
           if (record.get(property) != null
               && !record.get(property).isNull()
@@ -338,7 +334,6 @@ public class Neo4jClientUtils {
                     : transform(record.get(property)));
           }
         }
-        LOGGER.info("data size : "+data.size());
         Column c = new Column(pathName, type, data);
         columns.add(c);
       }

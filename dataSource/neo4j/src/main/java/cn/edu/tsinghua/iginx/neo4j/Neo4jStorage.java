@@ -158,13 +158,11 @@ public class Neo4jStorage implements IStorage {
 
       Map<String, Map<String, String>> labelToProperties =
           Neo4jClientUtils.splitAndMergeQueryPatterns(session, patterns);
-      LOGGER.info("labelToProperties: {}", labelToProperties);
 
       List<cn.edu.tsinghua.iginx.neo4j.entity.Column> columns = new ArrayList<>();
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
         String labelName = entry.getKey();
         Map<String, String> propertyMap = entry.getValue();
-        LOGGER.info("labelName: {}, propertyMap: {}, filter: {}", labelName, propertyMap, filter);
         columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, false));
       }
 
