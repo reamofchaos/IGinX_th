@@ -135,7 +135,7 @@ public class FilterTransformer {
             + filter.getValues().stream()
                 .map(value -> {
                   if (value.getDataType() == DataType.BINARY) {
-                    return value.getBinaryVAsString();
+                    return "'" + value.getBinaryVAsString() + "'";
                   } else {
                     return value.getValue();
                   }
