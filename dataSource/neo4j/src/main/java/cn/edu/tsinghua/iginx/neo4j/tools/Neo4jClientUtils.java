@@ -111,7 +111,11 @@ public class Neo4jClientUtils {
   }
 
   public static Map<String, Map<String, String>> determinePaths(
-      Session session, Collection<String> patterns, TagFilter tagFilter, String databaseName, boolean dummyOnly) {
+      Session session,
+      Collection<String> patterns,
+      TagFilter tagFilter,
+      String databaseName,
+      boolean dummyOnly) {
     Map<String, Map<String, String>> result = new HashMap<>();
 
     Map<String, Map<String, String>> labelToProperties =
@@ -143,12 +147,15 @@ public class Neo4jClientUtils {
     String label;
     String property;
 
-    if (patterns == null || patterns.isEmpty()){
+    if (patterns == null || patterns.isEmpty()) {
       patterns = new ArrayList<>();
       patterns.add("*");
     }
 
-    String prefix = org.apache.commons.lang3.StringUtils.isEmpty(databaseName)? "(unit.*\\.)?" : databaseName +"\\"+ SEPARATOR;
+    String prefix =
+        org.apache.commons.lang3.StringUtils.isEmpty(databaseName)
+            ? "(unit.*\\.)?"
+            : databaseName + "\\" + SEPARATOR;
     for (String pattern : patterns) {
       if (pattern.equals("*") || pattern.equals("*.*")) {
         label = prefix + ".*";

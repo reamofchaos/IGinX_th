@@ -30,7 +30,6 @@ import static cn.edu.tsinghua.iginx.neo4j.tools.TagKVUtils.splitFullName;
 import cn.edu.tsinghua.iginx.engine.physical.exception.PhysicalException;
 import cn.edu.tsinghua.iginx.engine.physical.exception.PhysicalTaskExecuteFailureException;
 import cn.edu.tsinghua.iginx.engine.physical.exception.StorageInitializationException;
-import cn.edu.tsinghua.iginx.engine.physical.memory.execute.stream.EmptyRowStream;
 import cn.edu.tsinghua.iginx.engine.physical.storage.IStorage;
 import cn.edu.tsinghua.iginx.engine.physical.storage.domain.Column;
 import cn.edu.tsinghua.iginx.engine.physical.storage.domain.DataArea;
@@ -151,19 +150,23 @@ public class Neo4jStorage implements IStorage {
     return executeProjectDummyWithFilter(project, filter);
   }
 
-
-
   private TaskExecuteResult executeProjectWithFilter(
       Project project, Filter filter, DataArea dataArea) {
     try (Session session = driver.session()) {
       Map<String, Map<String, String>> labelToProperties =
-          Neo4jClientUtils.determinePaths(session, project.getPatterns(), project.getTagFilter(),dataArea.getStorageUnit(), false);
+          Neo4jClientUtils.determinePaths(
+              session,
+              project.getPatterns(),
+              project.getTagFilter(),
+              dataArea.getStorageUnit(),
+              false);
 
       List<cn.edu.tsinghua.iginx.neo4j.entity.Column> columns = new ArrayList<>();
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
         String labelName = entry.getKey();
         Map<String, String> propertyMap = entry.getValue();
-        columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, isDummy(labelName)));
+        columns.addAll(
+            Neo4jClientUtils.query(session, labelName, propertyMap, filter, isDummy(labelName)));
       }
 
       return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter), null);
@@ -178,7 +181,8 @@ public class Neo4jStorage implements IStorage {
   private TaskExecuteResult executeProjectDummyWithFilter(Project project, Filter filter) {
     try (Session session = driver.session()) {
       Map<String, Map<String, String>> labelToProperties =
-          Neo4jClientUtils.determinePaths(session, project.getPatterns(), project.getTagFilter(), "", true);
+          Neo4jClientUtils.determinePaths(
+              session, project.getPatterns(), project.getTagFilter(), "", true);
 
       List<cn.edu.tsinghua.iginx.neo4j.entity.Column> columns = new ArrayList<>();
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
@@ -227,14 +231,16 @@ public class Neo4jStorage implements IStorage {
           Neo4jClientUtils.clearDatabase(session);
         } else {
           Map<String, Map<String, String>> labelToProperties =
-              Neo4jClientUtils.determinePaths(session, paths, tagFilter, dataArea.getStorageUnit(), false);
+              Neo4jClientUtils.determinePaths(
+                  session, paths, tagFilter, dataArea.getStorageUnit(), false);
           for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
             Neo4jClientUtils.removeProperties(session, entry.getKey(), entry.getValue().keySet());
           }
         }
       } else {
         Map<String, Map<String, String>> labelToProperties =
-            Neo4jClientUtils.determinePaths(session, paths, tagFilter, dataArea.getStorageUnit(), false);
+            Neo4jClientUtils.determinePaths(
+                session, paths, tagFilter, dataArea.getStorageUnit(), false);
 
         for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
           for (KeyRange keyRange : delete.getKeyRanges()) {
@@ -343,7 +349,8 @@ public class Neo4jStorage implements IStorage {
 
           Map<Long, Map<String, Object>> dataMap = labels.getValue();
           Collection<Map<String, Object>> dataList = dataMap.values();
-          Neo4jClientUtils.bulkInsert(session, databaseName + "." + labelName, IDENTITY_PROPERTY_NAME, dataList);
+          Neo4jClientUtils.bulkInsert(
+              session, databaseName + "." + labelName, IDENTITY_PROPERTY_NAME, dataList);
         }
         cnt += size;
       }
@@ -359,7 +366,7 @@ public class Neo4jStorage implements IStorage {
       throws PhysicalException {
     try (Session session = driver.session()) {
       Map<String, Map<String, String>> labelToProperties =
-          Neo4jClientUtils.determinePaths(session, patternSet, tagFilter,"", false);
+          Neo4jClientUtils.determinePaths(session, patternSet, tagFilter, "", false);
       List<Column> columns = new ArrayList<>();
 
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
@@ -368,7 +375,10 @@ public class Neo4jStorage implements IStorage {
               splitFullName(entry.getKey() + SEPARATOR + property.getKey());
           Column column =
               new Column(
-                      trimPrefix(pair.getK()), fromStringDataType(property.getValue()), pair.getV(), isDummy(entry.getKey()));
+                  trimPrefix(pair.getK()),
+                  fromStringDataType(property.getValue()),
+                  pair.getV(),
+                  isDummy(entry.getKey()));
           columns.add(column);
         }
       }
