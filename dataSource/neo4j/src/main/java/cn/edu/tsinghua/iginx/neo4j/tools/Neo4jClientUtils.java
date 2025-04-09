@@ -69,6 +69,7 @@ public class Neo4jClientUtils {
       try {
         Result result = session.run(query);
         result.consume(); // 确保操作完成
+        LOGGER.info("create unique constraint success : "+ query);
         return checkConstraintExists(session, label, property); // 二次验证
       } catch (Exception e) {
         return false;
@@ -278,9 +279,12 @@ public class Neo4jClientUtils {
               });
       List<LabelProperty> propertiesList= getProperties(session, label, ".*");
       Map<String, String> properties = new HashMap<>();
+      LOGGER.info("propertiesList:"+propertiesList);
       for (LabelProperty labelProperty : propertiesList) {
         properties.put(labelProperty.getPropertyName(), labelProperty.getPropertyType());
       }
+      LOGGER.info("properties:"+properties);
+      LOGGER.info("records:"+records);
       for (Record record : records) {
         String property = record.get("properties").asList().get(0).toString();
         if ("Long".equalsIgnoreCase(properties.get(property))) {
