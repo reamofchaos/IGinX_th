@@ -181,6 +181,10 @@ public class Neo4jClientUtils {
         property += ".*"; // 匹配 tagKV
       }
 
+      String keyProperty = null;
+      if (isDummy(label)){
+        keyProperty = getUniqueConstraintName(session, label);
+      }
       List<LabelProperty> columnFieldList = getProperties(session, label, property);
       for (LabelProperty labelProperty : columnFieldList) {
         String curlabelName = validateLabelName(labelProperty.getLabelName());
@@ -191,7 +195,9 @@ public class Neo4jClientUtils {
         if (curPropertyNames.equals(IDENTITY_PROPERTY_NAME)) {
           continue;
         }
-
+        if (keyProperty != null && keyProperty.equals(curPropertyNames)){
+          continue;
+        }
         labelToProperties
             .computeIfAbsent(curlabelName, k -> new HashMap<>())
             .put(curPropertyNames, labelProperty.getPropertyType());
@@ -273,9 +279,7 @@ public class Neo4jClientUtils {
       for (LabelProperty labelProperty : propertiesList) {
         properties.put(labelProperty.getPropertyName(), labelProperty.getPropertyType());
       }
-      LOGGER.info("unique constraints: " + records);
       for (Record record : records) {
-        LOGGER.info("unique constraints record: " + record);
         String property = record.get("properties").asList().get(0).toString();
         if ("Long".equalsIgnoreCase(properties.get(property))) {
           LOGGER.info("unique constraint property: " + property);
