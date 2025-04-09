@@ -279,6 +279,7 @@ public class Neo4jClientUtils {
               });
       List<LabelProperty> propertiesList= getProperties(session, label, ".*");
       Map<String, String> properties = new HashMap<>();
+      LOGGER.info("label:"+label);
       LOGGER.info("propertiesList:"+propertiesList);
       for (LabelProperty labelProperty : propertiesList) {
         properties.put(labelProperty.getPropertyName(), labelProperty.getPropertyType());

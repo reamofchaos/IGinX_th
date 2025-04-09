@@ -94,6 +94,7 @@ public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
       for (Map.Entry<String, List<Integer>> item : labelToColumnIndexes.entrySet()) {
         String labelName = item.getKey();
         Neo4jClientUtils.checkAndCreateUniqueConstraint(session, labelName, keyName);
+        Neo4jClientUtils.getUniqueConstraintName(session, labelName);
 
         List<Map<String, Object>> data = new ArrayList<>();
         int id = 0;
