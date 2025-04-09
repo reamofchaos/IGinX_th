@@ -29,6 +29,8 @@ import org.neo4j.driver.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.IDENTITY_PROPERTY_NAME;
+
 public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Neo4jHistoryDataGenerator.class);
@@ -64,6 +66,11 @@ public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
       List<DataType> dataTypeList,
       List keyList,
       List<List<Object>> valuesList) {
+    String keyName = IDENTITY_PROPERTY_NAME;
+    if (port!=Constant.oriPort){
+        keyName = KEY_NAME;
+    }
+
     try (Driver driver = createBoltDriver(port);
         Session session = driver.session()) {
       Map<String, List<Integer>> labelToColumnIndexes = new HashMap<>();
@@ -84,7 +91,7 @@ public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
       }
       for (Map.Entry<String, List<Integer>> item : labelToColumnIndexes.entrySet()) {
         String labelName = item.getKey();
-        Neo4jClientUtils.checkAndCreateUniqueConstraint(session, labelName, KEY_NAME);
+        Neo4jClientUtils.checkAndCreateUniqueConstraint(session, labelName, keyName);
 
         List<Map<String, Object>> data = new ArrayList<>();
         int id = 0;
@@ -98,22 +105,23 @@ public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
           }
           if (keyList != null && keyList.size() > i) {
             if (idType == DataType.LONG) {
-              row.put(KEY_NAME, ((Number) keyList.get(i)).longValue());
+              row.put(keyName, ((Number) keyList.get(i)).longValue());
             } else {
-              row.put(KEY_NAME, keyList.get(i));
+              row.put(keyName, keyList.get(i));
             }
           } else {
             if (idType == DataType.LONG) {
-              row.put(KEY_NAME, id++);
+              row.put(keyName, id++);
             } else {
-              row.put(KEY_NAME, String.valueOf(id++));
+              row.put(keyName, String.valueOf(id++));
             }
           }
 
           data.add(row);
         }
+        System.out.println("data:"+data);
 
-        Neo4jClientUtils.bulkInsert(session, labelName, KEY_NAME, data);
+        Neo4jClientUtils.bulkInsert(session, labelName, keyName, data);
         LOGGER.info("complete insertRows.");
       }
 
