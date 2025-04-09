@@ -19,6 +19,8 @@
  */
 package cn.edu.tsinghua.iginx.integration.expansion.neo4j;
 
+import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.IDENTITY_PROPERTY_NAME;
+
 import cn.edu.tsinghua.iginx.integration.expansion.BaseHistoryDataGenerator;
 import cn.edu.tsinghua.iginx.integration.expansion.constant.Constant;
 import cn.edu.tsinghua.iginx.neo4j.tools.Neo4jClientUtils;
@@ -28,8 +30,6 @@ import java.util.concurrent.TimeUnit;
 import org.neo4j.driver.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.IDENTITY_PROPERTY_NAME;
 
 public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
 
@@ -67,8 +67,8 @@ public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
       List keyList,
       List<List<Object>> valuesList) {
     String keyName = IDENTITY_PROPERTY_NAME;
-    if (port!=Constant.oriPort){
-        keyName = KEY_NAME;
+    if (port != Constant.oriPort) {
+      keyName = KEY_NAME;
     }
 
     try (Driver driver = createBoltDriver(port);
@@ -119,7 +119,7 @@ public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
 
           data.add(row);
         }
-        System.out.println("data:"+data);
+        System.out.println("data:" + data);
 
         Neo4jClientUtils.bulkInsert(session, labelName, keyName, data);
         LOGGER.info("complete insertRows.");

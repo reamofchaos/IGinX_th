@@ -263,7 +263,7 @@ public class Neo4jClientUtils {
       Map<String, String> properties,
       Filter filter,
       boolean isDummy) {
-    LOGGER.info("query: " + label + ", " + properties + ", " + filter+", "+isDummy);
+    LOGGER.info("query: " + label + ", " + properties + ", " + filter + ", " + isDummy);
     try {
       String expr = "";
       String quotedLabel = getQuoteName(label);
