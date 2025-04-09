@@ -89,7 +89,7 @@ public class Neo4jCapacityExpansionIT extends BaseCapacityExpansionIT {
       List<Object> l = new ArrayList<>();
       for (Object o: list){
         if (o instanceof Float){
-          l.add((double)o);
+          l.add(((Float)o).doubleValue());
         }
       }
       valuesList.add(l);
