@@ -20,6 +20,7 @@
 package cn.edu.tsinghua.iginx.neo4j.tools;
 
 import static cn.edu.tsinghua.iginx.constant.GlobalConstant.SEPARATOR;
+import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.DATABASE_PREFIX;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.IDENTITY_PROPERTY_NAME;
 import static cn.edu.tsinghua.iginx.neo4j.tools.DataTransformer.fromStringDataType;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jSchema.getQuoteName;
@@ -110,11 +111,11 @@ public class Neo4jClientUtils {
   }
 
   public static Map<String, Map<String, String>> determinePaths(
-      Session session, Collection<String> patterns, TagFilter tagFilter) {
+      Session session, Collection<String> patterns, TagFilter tagFilter, String databaseName, boolean dummyOnly) {
     Map<String, Map<String, String>> result = new HashMap<>();
 
     Map<String, Map<String, String>> labelToProperties =
-        splitAndMergeQueryPatterns(session, patterns);
+        splitAndMergeQueryPatterns(session, patterns, databaseName, dummyOnly);
     // iterate labels
     for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
       // iterate properties
@@ -135,19 +136,25 @@ public class Neo4jClientUtils {
   }
 
   public static Map<String, Map<String, String>> splitAndMergeQueryPatterns(
-      Session session, Collection<String> patterns) {
+      Session session, Collection<String> patterns, String databaseName, boolean dummyOnly) {
     // label name -> (property names -> property type)
     // 1 -> n
     Map<String, Map<String, String>> labelToProperties = new HashMap<>();
     String label;
     String property;
 
+    if (patterns == null || patterns.isEmpty()){
+      patterns = new ArrayList<>();
+      patterns.add("*");
+    }
+
+    String prefix = org.apache.commons.lang3.StringUtils.isEmpty(databaseName)? "(unit.*\\.)?" : databaseName +"\\"+ SEPARATOR;
     for (String pattern : patterns) {
       if (pattern.equals("*") || pattern.equals("*.*")) {
-        label = ".*";
+        label = prefix + ".*";
         property = ".*";
       } else if (pattern.split("\\" + SEPARATOR).length == 1) { // REST 查询的路径中可能不含 .
-        label = escapeRegex(pattern);
+        label = prefix + escapeRegex(pattern).replace("\\*", ".*");
         property = ".*";
       } else {
         Neo4jSchema schema = new Neo4jSchema(pattern, false);
@@ -159,6 +166,7 @@ public class Neo4jClientUtils {
         if (propertyEqualsStar && !label.endsWith("*")) {
           label = label + "(\\..+)?";
         }
+        label = prefix + label;
         property = escapeRegex(property).replace("\\*", ".*");
       }
 
@@ -169,6 +177,9 @@ public class Neo4jClientUtils {
       List<LabelProperty> columnFieldList = getProperties(session, label, property);
       for (LabelProperty labelProperty : columnFieldList) {
         String curlabelName = validateLabelName(labelProperty.getLabelName());
+        if (dummyOnly && !isDummy(curlabelName)) {
+          continue;
+        }
         String curPropertyNames = validatePropertyName(labelProperty.getPropertyName());
         if (curPropertyNames.equals(IDENTITY_PROPERTY_NAME)) {
           continue;
@@ -180,6 +191,14 @@ public class Neo4jClientUtils {
       }
     }
     return labelToProperties;
+  }
+
+  public static String trimPrefix(String labelName) {
+    return labelName.replaceFirst("^" + DATABASE_PREFIX + "[^\\.]*\\.", "");
+  }
+
+  public static boolean isDummy(String labelName) {
+    return !labelName.startsWith(DATABASE_PREFIX);
   }
 
   public static String validateLabelName(String labelName) {
@@ -336,7 +355,7 @@ public class Neo4jClientUtils {
                     : transform(record.get(property)));
           }
         }
-        Column c = new Column(pathName, type, data);
+        Column c = new Column(trimPrefix(pathName), type, data);
         columns.add(c);
       }
 

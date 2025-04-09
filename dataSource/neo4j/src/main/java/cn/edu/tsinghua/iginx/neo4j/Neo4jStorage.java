@@ -23,6 +23,8 @@ import static cn.edu.tsinghua.iginx.constant.GlobalConstant.SEPARATOR;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.IDENTITY_PROPERTY_NAME;
 import static cn.edu.tsinghua.iginx.neo4j.tools.DataTransformer.fromIginxType;
 import static cn.edu.tsinghua.iginx.neo4j.tools.DataTransformer.fromStringDataType;
+import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jClientUtils.isDummy;
+import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jClientUtils.trimPrefix;
 import static cn.edu.tsinghua.iginx.neo4j.tools.TagKVUtils.splitFullName;
 
 import cn.edu.tsinghua.iginx.engine.physical.exception.PhysicalException;
@@ -63,8 +65,6 @@ public class Neo4jStorage implements IStorage {
   private static final Logger LOGGER = LoggerFactory.getLogger(Neo4jStorage.class);
   private final Driver driver;
 
-  private final boolean isDummy;
-
   private final StorageEngineMeta meta;
 
   /**
@@ -96,7 +96,6 @@ public class Neo4jStorage implements IStorage {
             params.getOrDefault(
                 Constants.CONNECTION_CHECK_TIMEOUT,
                 String.valueOf(Constants.DEFAULT_CONNECTION_CHECK_TIMEOUT)));
-    this.isDummy = Boolean.parseBoolean(params.getOrDefault(Constants.NEO4j_IS_DUMMY, Constants.DEFAULT_NEO4j_IS_DUMMY));
 
     Config config =
         Config.builder()
@@ -152,25 +151,19 @@ public class Neo4jStorage implements IStorage {
     return executeProjectDummyWithFilter(project, filter);
   }
 
+
+
   private TaskExecuteResult executeProjectWithFilter(
       Project project, Filter filter, DataArea dataArea) {
-    if (this.isDummy){
-      return new TaskExecuteResult(new EmptyRowStream());
-    }
     try (Session session = driver.session()) {
-      List<String> patterns = project.getPatterns();
-      if (patterns == null || patterns.isEmpty()) {
-        patterns = Arrays.asList("*");
-      }
-
       Map<String, Map<String, String>> labelToProperties =
-          Neo4jClientUtils.determinePaths(session, patterns, project.getTagFilter());
+          Neo4jClientUtils.determinePaths(session, project.getPatterns(), project.getTagFilter(),dataArea.getStorageUnit(), false);
 
       List<cn.edu.tsinghua.iginx.neo4j.entity.Column> columns = new ArrayList<>();
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
         String labelName = entry.getKey();
         Map<String, String> propertyMap = entry.getValue();
-        columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, this.isDummy));
+        columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, isDummy(labelName)));
       }
 
       return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter), null);
@@ -183,24 +176,15 @@ public class Neo4jStorage implements IStorage {
   }
 
   private TaskExecuteResult executeProjectDummyWithFilter(Project project, Filter filter) {
-    if (!this.isDummy){
-      return new TaskExecuteResult(new EmptyRowStream());
-    }
-
     try (Session session = driver.session()) {
-      List<String> patterns = project.getPatterns();
-      if (patterns == null || patterns.isEmpty()) {
-        patterns = Arrays.asList("*");
-      }
-
       Map<String, Map<String, String>> labelToProperties =
-          Neo4jClientUtils.determinePaths(session, patterns, project.getTagFilter());
+          Neo4jClientUtils.determinePaths(session, project.getPatterns(), project.getTagFilter(), "", true);
 
       List<cn.edu.tsinghua.iginx.neo4j.entity.Column> columns = new ArrayList<>();
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
         String labelName = entry.getKey();
         Map<String, String> propertyMap = entry.getValue();
-        columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, this.isDummy));
+        columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, true));
       }
 
       return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter), null);
@@ -243,14 +227,14 @@ public class Neo4jStorage implements IStorage {
           Neo4jClientUtils.clearDatabase(session);
         } else {
           Map<String, Map<String, String>> labelToProperties =
-              Neo4jClientUtils.determinePaths(session, paths, tagFilter);
+              Neo4jClientUtils.determinePaths(session, paths, tagFilter, dataArea.getStorageUnit(), false);
           for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
             Neo4jClientUtils.removeProperties(session, entry.getKey(), entry.getValue().keySet());
           }
         }
       } else {
         Map<String, Map<String, String>> labelToProperties =
-            Neo4jClientUtils.determinePaths(session, paths, tagFilter);
+            Neo4jClientUtils.determinePaths(session, paths, tagFilter, dataArea.getStorageUnit(), false);
 
         for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
           for (KeyRange keyRange : delete.getKeyRanges()) {
@@ -354,12 +338,12 @@ public class Neo4jStorage implements IStorage {
           String labelName = labels.getKey();
           if (cnt == 0) {
             Neo4jClientUtils.checkAndCreateUniqueConstraint(
-                session, labelName, IDENTITY_PROPERTY_NAME);
+                session, databaseName + "." + labelName, IDENTITY_PROPERTY_NAME);
           }
 
           Map<Long, Map<String, Object>> dataMap = labels.getValue();
           Collection<Map<String, Object>> dataList = dataMap.values();
-          Neo4jClientUtils.bulkInsert(session, labelName, IDENTITY_PROPERTY_NAME, dataList);
+          Neo4jClientUtils.bulkInsert(session, databaseName + "." + labelName, IDENTITY_PROPERTY_NAME, dataList);
         }
         cnt += size;
       }
@@ -371,20 +355,11 @@ public class Neo4jStorage implements IStorage {
   }
 
   @Override
-  public List<Column> getColumns(Set<String> patterns, TagFilter tagFilter)
+  public List<Column> getColumns(Set<String> patternSet, TagFilter tagFilter)
       throws PhysicalException {
     try (Session session = driver.session()) {
-      if (patterns == null || patterns.size() == 0) {
-        patterns = new HashSet<>();
-        patterns.add("*");
-      }
-      Map<String, String> extraParams = meta.getExtraParams();
-      boolean isDummy =
-          extraParams.get("has_data") != null
-              && extraParams.get("has_data").equalsIgnoreCase("true");
-
       Map<String, Map<String, String>> labelToProperties =
-          Neo4jClientUtils.determinePaths(session, patterns, tagFilter);
+          Neo4jClientUtils.determinePaths(session, patternSet, tagFilter,"", false);
       List<Column> columns = new ArrayList<>();
 
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
@@ -393,7 +368,7 @@ public class Neo4jStorage implements IStorage {
               splitFullName(entry.getKey() + SEPARATOR + property.getKey());
           Column column =
               new Column(
-                  pair.getK(), fromStringDataType(property.getValue()), pair.getV(), isDummy);
+                      trimPrefix(pair.getK()), fromStringDataType(property.getValue()), pair.getV(), isDummy(entry.getKey()));
           columns.add(column);
         }
       }
@@ -410,15 +385,12 @@ public class Neo4jStorage implements IStorage {
     try (Session session = driver.session()) {
       ColumnsInterval columnsInterval;
       TreeSet<String> paths = new TreeSet<>();
-      Set<String> patterns = new HashSet<>();
-      patterns.add("*");
-
       Map<String, Map<String, String>> labelToProperties =
-          Neo4jClientUtils.determinePaths(session, patterns, null);
+          Neo4jClientUtils.determinePaths(session, null, null, "", false);
 
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
         for (Map.Entry<String, String> property : entry.getValue().entrySet()) {
-          String path = entry.getKey() + SEPARATOR + property.getKey();
+          String path = trimPrefix(entry.getKey() + SEPARATOR + property.getKey());
           if (org.apache.commons.lang3.StringUtils.isNotEmpty(prefix)
               && org.apache.commons.lang3.StringUtils.isNotEmpty(path)
               && !path.startsWith(prefix)) {
