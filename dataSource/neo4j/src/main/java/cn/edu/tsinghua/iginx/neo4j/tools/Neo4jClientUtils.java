@@ -101,6 +101,7 @@ public class Neo4jClientUtils {
               .collect(Collectors.toList()));
 
       session.run(insertQuery, params).consume();
+      LOGGER.info("bulk insert success : " + nodes.size());
       return true;
     } catch (Exception e) {
       LOGGER.error("bulk insert error: ", e);
