@@ -61,12 +61,12 @@ public class Neo4jCapacityExpansionIT extends BaseCapacityExpansionIT {
 
   @Override
   protected void shutdownDatabase(int port) {
-    shutOrRestart(port, true, "milvus");
+    shutOrRestart(port, true, "neo4j");
   }
 
   @Override
   protected void startDatabase(int port) {
-    shutOrRestart(port, false, "milvus");
+    shutOrRestart(port, false, "neo4j");
   }
 
   @Override
