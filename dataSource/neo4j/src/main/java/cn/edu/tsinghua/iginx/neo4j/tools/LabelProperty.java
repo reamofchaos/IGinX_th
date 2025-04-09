@@ -53,4 +53,12 @@ public class LabelProperty {
   public void setPropertyType(String propertyType) {
     this.propertyType = propertyType;
   }
+
+  public String toString() {
+    return "LabelProperty{" +
+        "labelName='" + labelName + '\'' +
+        ", propertyName='" + propertyName + '\'' +
+        ", propertyType='" + propertyType + '\'' +
+        '}';
+  }
 }

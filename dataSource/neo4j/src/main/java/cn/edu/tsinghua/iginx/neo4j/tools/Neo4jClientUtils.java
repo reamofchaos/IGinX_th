@@ -184,8 +184,10 @@ public class Neo4jClientUtils {
       String keyProperty = null;
       if (isDummy(label)){
         keyProperty = getUniqueConstraintName(session, label);
+        LOGGER.info("-------------------keyProperty:"+keyProperty);
       }
       List<LabelProperty> columnFieldList = getProperties(session, label, property);
+      LOGGER.info("columnFieldList:"+columnFieldList);
       for (LabelProperty labelProperty : columnFieldList) {
         String curlabelName = validateLabelName(labelProperty.getLabelName());
         if (dummyOnly && !isDummy(curlabelName)) {
