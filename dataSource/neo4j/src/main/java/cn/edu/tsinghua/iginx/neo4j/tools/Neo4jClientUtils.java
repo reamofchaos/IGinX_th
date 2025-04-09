@@ -259,7 +259,7 @@ public class Neo4jClientUtils {
   }
 
   public static String getUniqueConstraintName(
-      Session session, String label, Map<String, String> properties) {
+      Session session, String label) {
     try {
       String query = "SHOW CONSTRAINTS WHERE type = 'UNIQUENESS' AND labelsOrTypes = [$label] ";
       List<Record> records =
@@ -268,8 +268,14 @@ public class Neo4jClientUtils {
                 Result result = tx.run(query, parameters("label", label));
                 return result.list();
               });
-
+      List<LabelProperty> propertiesList= getProperties(session, label, ".*");
+      Map<String, String> properties = new HashMap<>();
+      for (LabelProperty labelProperty : propertiesList) {
+        properties.put(labelProperty.getPropertyName(), labelProperty.getPropertyType());
+      }
+      LOGGER.info("unique constraints: " + records);
       for (Record record : records) {
+        LOGGER.info("unique constraints record: " + record);
         String property = record.get("properties").asList().get(0).toString();
         if ("Long".equalsIgnoreCase(properties.get(property))) {
           LOGGER.info("unique constraint property: " + property);
@@ -296,7 +302,7 @@ public class Neo4jClientUtils {
 
       String keyProperty = null;
       if (isDummy) {
-        keyProperty = getUniqueConstraintName(session, label, properties);
+        keyProperty = getUniqueConstraintName(session, label);
       }
 
       if (!FilterUtils.filterContainsType(
