@@ -182,23 +182,25 @@ public class Neo4jClientUtils {
         property += ".*"; // 匹配 tagKV
       }
 
-      String keyProperty = null;
-      if (isDummy(label)){
-        keyProperty = getUniqueConstraintName(session, label);
-        LOGGER.info("-------------------keyProperty:"+keyProperty);
-      }
+      Map<String,String> keyPropertyMap = new HashMap<>();
       List<LabelProperty> columnFieldList = getProperties(session, label, property);
-      LOGGER.info("columnFieldList:"+columnFieldList);
       for (LabelProperty labelProperty : columnFieldList) {
         String curlabelName = validateLabelName(labelProperty.getLabelName());
+
         if (dummyOnly && !isDummy(curlabelName)) {
           continue;
         }
+        if (!keyPropertyMap.containsKey(curlabelName)){
+          String keyProperty = getUniqueConstraintName(session, curlabelName);
+          LOGGER.info("-------------------keyProperty:"+keyProperty);
+          keyPropertyMap.put(curlabelName, keyProperty);
+        }
+
         String curPropertyNames = validatePropertyName(labelProperty.getPropertyName());
         if (curPropertyNames.equals(IDENTITY_PROPERTY_NAME)) {
           continue;
         }
-        if (keyProperty != null && keyProperty.equals(curPropertyNames)){
+        if (keyPropertyMap.get(curlabelName) != null && keyPropertyMap.get(curlabelName).equals(curPropertyNames)){
           continue;
         }
         labelToProperties
