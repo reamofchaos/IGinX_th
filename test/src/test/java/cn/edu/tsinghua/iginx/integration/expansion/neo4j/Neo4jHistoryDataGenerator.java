@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.neo4j.driver.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,7 +136,12 @@ public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
   @Override
   public void writeHistoryData(
       int port, List<String> pathList, List<DataType> dataTypeList, List<List<Object>> valuesList) {
-    writeHistoryData(port, pathList, dataTypeList, IntStream.range(0, valuesList.size()).mapToObj(Long::valueOf).collect(Collectors.toList()), valuesList);
+    writeHistoryData(
+        port,
+        pathList,
+        dataTypeList,
+        IntStream.range(0, valuesList.size()).mapToObj(Long::valueOf).collect(Collectors.toList()),
+        valuesList);
   }
 
   @Override

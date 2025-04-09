@@ -102,7 +102,7 @@ public class Neo4jClientUtils {
               .collect(Collectors.toList()));
 
       session.run(insertQuery, params).consume();
-      LOGGER.info("bulk insert success : " + nodes.size());
+      LOGGER.info("bulk insert " + label + "success : " + nodes.size());
       return true;
     } catch (Exception e) {
       LOGGER.error("bulk insert error: ", e);
@@ -293,12 +293,26 @@ public class Neo4jClientUtils {
     try {
       String expr = "";
       String quotedLabel = getQuoteName(label);
+
+      String keyProperty = null;
+      if (isDummy) {
+        keyProperty = getUniqueConstraintName(session, label, properties);
+      }
+
       if (!FilterUtils.filterContainsType(
           Arrays.asList(FilterType.Value, FilterType.Path, FilterType.In), filter)) {
         if (isDummy) {
-          expr =
-              new FilterTransformer("id(" + quotedLabel + ")", label)
-                  .toString(FilterUtils.expandFilter(filter, "id(" + quotedLabel + ")"));
+          if (keyProperty == null) {
+            expr =
+                    new FilterTransformer("id(" + quotedLabel + ")", label)
+                            .toString(FilterUtils.expandFilter(filter, "id(" + quotedLabel + ")"));
+          } else {
+            expr =
+                    new FilterTransformer(quotedLabel + ".`" + keyProperty + "`", label)
+                            .toString(
+                                    FilterUtils.expandFilter(
+                                            filter, quotedLabel + ".`" + keyProperty + "`"));
+          }
         } else {
           expr =
               new FilterTransformer(quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`", label)
@@ -313,7 +327,6 @@ public class Neo4jClientUtils {
 
       StringBuilder r = new StringBuilder();
       if (isDummy) {
-        String keyProperty = getUniqueConstraintName(session, label, properties);
         if (keyProperty == null) {
           r.append("id(" + quotedLabel + ") as ").append(IDENTITY_PROPERTY_NAME);
         } else {
