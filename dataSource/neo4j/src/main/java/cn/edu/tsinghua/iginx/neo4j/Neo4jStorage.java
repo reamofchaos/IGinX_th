@@ -28,6 +28,7 @@ import static cn.edu.tsinghua.iginx.neo4j.tools.TagKVUtils.splitFullName;
 import cn.edu.tsinghua.iginx.engine.physical.exception.PhysicalException;
 import cn.edu.tsinghua.iginx.engine.physical.exception.PhysicalTaskExecuteFailureException;
 import cn.edu.tsinghua.iginx.engine.physical.exception.StorageInitializationException;
+import cn.edu.tsinghua.iginx.engine.physical.memory.execute.stream.EmptyRowStream;
 import cn.edu.tsinghua.iginx.engine.physical.storage.IStorage;
 import cn.edu.tsinghua.iginx.engine.physical.storage.domain.Column;
 import cn.edu.tsinghua.iginx.engine.physical.storage.domain.DataArea;
@@ -62,6 +63,8 @@ public class Neo4jStorage implements IStorage {
   private static final Logger LOGGER = LoggerFactory.getLogger(Neo4jStorage.class);
   private final Driver driver;
 
+  private final boolean isDummy;
+
   private final StorageEngineMeta meta;
 
   /**
@@ -93,6 +96,7 @@ public class Neo4jStorage implements IStorage {
             params.getOrDefault(
                 Constants.CONNECTION_CHECK_TIMEOUT,
                 String.valueOf(Constants.DEFAULT_CONNECTION_CHECK_TIMEOUT)));
+    this.isDummy = Boolean.parseBoolean(params.getOrDefault(Constants.NEO4j_IS_DUMMY, Constants.DEFAULT_NEO4j_IS_DUMMY));
 
     Config config =
         Config.builder()
@@ -150,6 +154,9 @@ public class Neo4jStorage implements IStorage {
 
   private TaskExecuteResult executeProjectWithFilter(
       Project project, Filter filter, DataArea dataArea) {
+    if (this.isDummy){
+      return new TaskExecuteResult(new EmptyRowStream());
+    }
     try (Session session = driver.session()) {
       List<String> patterns = project.getPatterns();
       if (patterns == null || patterns.isEmpty()) {
@@ -163,7 +170,7 @@ public class Neo4jStorage implements IStorage {
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
         String labelName = entry.getKey();
         Map<String, String> propertyMap = entry.getValue();
-        columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, false));
+        columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, this.isDummy));
       }
 
       return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter), null);
@@ -176,6 +183,10 @@ public class Neo4jStorage implements IStorage {
   }
 
   private TaskExecuteResult executeProjectDummyWithFilter(Project project, Filter filter) {
+    if (!this.isDummy){
+      return new TaskExecuteResult(new EmptyRowStream());
+    }
+
     try (Session session = driver.session()) {
       List<String> patterns = project.getPatterns();
       if (patterns == null || patterns.isEmpty()) {
@@ -189,7 +200,7 @@ public class Neo4jStorage implements IStorage {
       for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
         String labelName = entry.getKey();
         Map<String, String> propertyMap = entry.getValue();
-        columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, true));
+        columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, this.isDummy));
       }
 
       return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter), null);

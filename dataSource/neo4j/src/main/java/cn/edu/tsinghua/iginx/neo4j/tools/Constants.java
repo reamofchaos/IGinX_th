@@ -28,6 +28,9 @@ public class Constants {
 
   public static final String CONNECTION_CHECK_TIMEOUT = "checkTimeout";
 
+  public static final String NEO4j_IS_DUMMY = "is_dummy";
+
+  public static final String DEFAULT_NEO4j_IS_DUMMY = "true";
   public static final int DEFAULT_MAX_CONNECTION_POOL_SIZE = 50;
 
   public static final int DEFAULT_CONNECTION_TIMEOUT = 100000;
