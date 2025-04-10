@@ -27,7 +27,7 @@ else
 fi
 
 echo "stop neo4j $port"
-powershell -Command "Start-Process -FilePath './neo4j_instances/$port/bin/neo4j.bat' -ArgumentList 'stop' -Wait"
+cmd.exe /C "neo4j_instances\\${port}\\bin\\neo4j.bat stop"
 echo "stopped OK."
 sleep 10
 
