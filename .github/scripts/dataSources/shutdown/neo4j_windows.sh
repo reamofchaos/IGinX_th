@@ -19,6 +19,7 @@
 
 port=$1
 pwd
+dir
 
 if netstat -an | grep -q ".*:$port.*LISTEN"; then
   echo "Port $port is open."
@@ -27,7 +28,8 @@ else
 fi
 
 echo "stop neo4j $port"
-cmd.exe /C "call neo4j_instances\\${port}\\bin\\neo4j.bat stop"
+powershell -command "Start-Process -FilePath 'neo4j_instances\\${port}\\bin\\neo4j.bat' -ArgumentList 'stop' -Wait"
+#powershell -command "Start-Process -FilePath 'influxdb2-2.0.7-windows-amd64-$port/influxd' $arguments -NoNewWindow $redirect"
 echo "stopped OK."
 sleep 10
 
