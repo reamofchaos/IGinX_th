@@ -177,5 +177,5 @@ public class Neo4jCapacityExpansionIT extends BaseCapacityExpansionIT {
             + "Total line number = 3\n";
     SQLTestTools.executeAndCompare(session, statement, expect);
   }
-  
+
 }

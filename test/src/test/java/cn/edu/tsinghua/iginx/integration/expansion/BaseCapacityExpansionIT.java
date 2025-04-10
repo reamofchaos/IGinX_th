@@ -193,7 +193,11 @@ public abstract class BaseCapacityExpansionIT {
 
   @After
   public void clearData() {
-    Controller.clearData(session);
+    try {
+      Controller.clearData(session);
+    }catch (Exception e){
+      LOGGER.error("Error occurred during execution ", e);
+    }
   }
 
   private void addStorageEngineInProgress(

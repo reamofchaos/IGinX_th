@@ -122,7 +122,6 @@ public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
 
           data.add(row);
         }
-        System.out.println("data:" + data);
 
         Neo4jClientUtils.bulkInsert(session, labelName, keyName, data);
         LOGGER.info("complete insertRows.");
