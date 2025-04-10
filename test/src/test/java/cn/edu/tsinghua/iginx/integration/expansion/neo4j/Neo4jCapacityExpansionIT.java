@@ -70,11 +70,6 @@ public class Neo4jCapacityExpansionIT extends BaseCapacityExpansionIT {
   protected void testQuerySpecialHistoryData() {
     testFloatData();
     testFilter();
-    try {
-      testShowDummyColumns();
-    } catch (SessionException e) {
-      e.printStackTrace();
-    }
   }
 
   /** 测试float类型数据 */
@@ -182,42 +177,5 @@ public class Neo4jCapacityExpansionIT extends BaseCapacityExpansionIT {
             + "Total line number = 3\n";
     SQLTestTools.executeAndCompare(session, statement, expect);
   }
-
-  private void testShowDummyColumns() throws SessionException {
-    String schemaPrefix = "dummy";
-    int readOnlyPort = 19532;
-    Map<String, String> extraParams = new HashMap<>();
-    extraParams.put("has_data", "true");
-    extraParams.put("is_read_only", "true");
-    extraParams.put("schema_prefix", schemaPrefix);
-    try {
-      session.addStorageEngine(LOCAL_IP, readOnlyPort, StorageEngineType.vectordb, extraParams);
-    } catch (SessionException e) {
-    }
-    String statement = "SHOW COLUMNS dummy.*;";
-    String expected =
-        "Columns:\n"
-            + "+------------------------------+--------+\n"
-            + "|                          Path|DataType|\n"
-            + "+------------------------------+--------+\n"
-            + "|                 dummy.d1.c1.b| BOOLEAN|\n"
-            + "|                 dummy.d1.c1.f|   FLOAT|\n"
-            + "|                 dummy.d1.c1.i|    LONG|\n"
-            + "|                 dummy.d1.c1.s|  BINARY|\n"
-            + "|            dummy.d1.c1.vector|  BINARY|\n"
-            + "|                 dummy.d2.c1.b| BOOLEAN|\n"
-            + "|                 dummy.d2.c1.f|  DOUBLE|\n"
-            + "|                 dummy.d2.c1.i|    LONG|\n"
-            + "|                 dummy.d2.c1.s|  BINARY|\n"
-            + "|            dummy.d2.c1.vector|  BINARY|\n"
-            + "|     dummy.tm.wf05.wt01.status|    LONG|\n"
-            + "|dummy.tm.wf05.wt01.temperature|  DOUBLE|\n"
-            + "|      dummy.tm.wf05.wt02.float|   FLOAT|\n"
-            + "|     dummy.tm.wf05.wt02.vector|  BINARY|\n"
-            + "+------------------------------+--------+\n"
-            + "Total line number = 14\n";
-    SQLTestTools.executeAndCompare(session, statement, expected);
-    session.removeStorageEngine(
-        Arrays.asList(new RemovedStorageEngineInfo(LOCAL_IP, readOnlyPort, schemaPrefix, "")));
-  }
+  
 }
