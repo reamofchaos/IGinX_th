@@ -29,6 +29,22 @@ fi
 echo "stop neo4j $port"
 powershell.exe -Command "Start-Process -FilePath './neo4j_instances/$port/bin/neo4j.bat' -ArgumentList 'stop' -Wait"
 echo "stopped OK."
+sleep 10
+
+if netstat -an | grep -q ".*:$port.*LISTEN"; then
+  echo "Port $port is open."
+else
+  echo "Port $port is not open."
+fi
+
+sleep 10
+
+port1=8888
+if netstat -an | grep -q ".*:$port1.*LISTEN"; then
+  echo "Port $port1 is open."
+else
+  echo "Port $port1 is not open."
+fi
 
 if netstat -an | grep -q ".*:$port.*LISTEN"; then
   echo "Port $port is open."
@@ -36,4 +52,3 @@ else
   echo "Port $port is not open."
 fi
 #powershell -Command "Start-Process -FilePath ./neo4j_instances/$port/bin/neo4j.bat -ArgumentList stop -NoNewWindow -Wait"
-sleep 10
