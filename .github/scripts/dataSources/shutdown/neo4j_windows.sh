@@ -27,7 +27,7 @@ else
 fi
 
 echo "stop neo4j $port"
-cmd.exe /C "neo4j_instances\\${port}\\bin\\neo4j.bat stop"
+cmd.exe /C "call neo4j_instances\\${port}\\bin\\neo4j.bat stop"
 echo "stopped OK."
 sleep 10
 

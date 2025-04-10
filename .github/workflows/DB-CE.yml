@@ -69,7 +69,7 @@ jobs:
             - name: show info
               shell: bash
               run: |
-                  echo "=======================================2"
+                  echo "=======================================3"
                   echo "java version: ${{ matrix.java }}"
                   echo "python version: ${{ matrix.python-version }}"
                   echo "os: ${{ matrix.os }}"
