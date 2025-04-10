@@ -27,11 +27,14 @@ else
   echo "Port $port is not open."
 fi
 
+powershell -Command "Start-Process -FilePath 'neo4j_instances\\${port}\\bin\\neo4j.bat' -ArgumentList 'status' -Wait"
 echo "stop neo4j $port"
-powershell -command "Start-Process -FilePath 'neo4j_instances\\${port}\\bin\\neo4j.bat' -ArgumentList 'stop' -Wait"
+
+powershell -Command "Start-Process -FilePath 'neo4j_instances\\${port}\\bin\\neo4j.bat' -ArgumentList 'stop' -Wait"
 #powershell -command "Start-Process -FilePath 'influxdb2-2.0.7-windows-amd64-$port/influxd' $arguments -NoNewWindow $redirect"
 echo "stopped OK."
 sleep 10
+powershell -Command "Start-Process -FilePath 'neo4j_instances\\${port}\\bin\\neo4j.bat' -ArgumentList 'status' -Wait"
 
 if netstat -an | grep -q ".*:$port.*LISTEN"; then
   echo "Port $port is open."
