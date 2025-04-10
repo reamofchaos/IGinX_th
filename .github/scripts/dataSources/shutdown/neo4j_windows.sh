@@ -19,5 +19,5 @@
 
 port=$1
 pwd
-powershell -Command "Start-Process -FilePath ./neo4j_instances/$port/bin/neo4j.bat -ArgumentList stop"
-sleep 6
+powershell -Command "Start-Process -FilePath ./neo4j_instances/$port/bin/neo4j.bat -ArgumentList stop -NoNewWindow -Wait"
+sleep 10

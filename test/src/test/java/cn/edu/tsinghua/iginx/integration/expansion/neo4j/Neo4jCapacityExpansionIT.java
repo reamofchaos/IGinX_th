@@ -19,16 +19,12 @@
  */
 package cn.edu.tsinghua.iginx.integration.expansion.neo4j;
 
-import static cn.edu.tsinghua.iginx.integration.expansion.neo4j.Neo4jHistoryDataGenerator.LOCAL_IP;
-
-import cn.edu.tsinghua.iginx.exception.SessionException;
 import cn.edu.tsinghua.iginx.integration.controller.Controller;
 import cn.edu.tsinghua.iginx.integration.expansion.BaseCapacityExpansionIT;
 import cn.edu.tsinghua.iginx.integration.expansion.constant.Constant;
 import cn.edu.tsinghua.iginx.integration.expansion.utils.SQLTestTools;
 import cn.edu.tsinghua.iginx.integration.tool.ConfLoader;
 import cn.edu.tsinghua.iginx.integration.tool.DBConf;
-import cn.edu.tsinghua.iginx.thrift.RemovedStorageEngineInfo;
 import cn.edu.tsinghua.iginx.thrift.StorageEngineType;
 import java.util.*;
 import org.slf4j.Logger;
@@ -177,5 +173,4 @@ public class Neo4jCapacityExpansionIT extends BaseCapacityExpansionIT {
             + "Total line number = 3\n";
     SQLTestTools.executeAndCompare(session, statement, expect);
   }
-
 }
