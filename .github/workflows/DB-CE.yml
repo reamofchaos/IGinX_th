@@ -66,6 +66,18 @@ jobs:
         env:
             METADATA_STORAGE: ${{ matrix.metadata }}
         steps:
+            - name: show info
+              shell: bash
+              run: |
+                  echo "=======================================2"
+                  echo "java version: ${{ matrix.java }}"
+                  echo "python version: ${{ matrix.python-version }}"
+                  echo "os: ${{ matrix.os }}"
+                  echo "metadata: ${{ matrix.metadata }}"
+                  echo "DB-name: ${{ matrix.DB-name }}"
+                  echo "test-way: ${{ matrix.test-way }}"
+                  echo "close-optimizer: ${{ inputs.close-optimizer}}"
+
             - uses: actions/checkout@v4
             - name: Environment dependence
               uses: ./.github/actions/dependence
@@ -74,18 +86,6 @@ jobs:
                   java: ${{ matrix.java }}
                   iginx-conda-flag: "true"
                   iginx-conda-env: "iginxEnv"
-
-            - name: show info
-              shell: bash
-              run: |
-                  echo "=======================================1"
-                  echo "java version: ${{ matrix.java }}"
-                  echo "python version: ${{ matrix.python-version }}"
-                  echo "os: ${{ matrix.os }}"
-                  echo "metadata: ${{ matrix.metadata }}"
-                  echo "DB-name: ${{ matrix.DB-name }}"
-                  echo "test-way: ${{ matrix.test-way }}"
-                  echo "close-optimizer: ${{ inputs.close-optimizer}}"
 
             - name: Run Metadata
               uses: ./.github/actions/metadataRunner
