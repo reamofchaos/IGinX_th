@@ -16,8 +16,7 @@ on:
                 description: "The operating system to run the test on"
                 type: string
                 required: false
-#                default: '["ubuntu-latest", "macos-latest", "windows-latest"]'
-                default: '["windows-latest"]'
+                default: '["ubuntu-latest", "macos-latest", "windows-latest"]'
             metadata-matrix:
                 description: "The metadata to run the test on"
                 type: string
@@ -57,27 +56,15 @@ jobs:
                 metadata: ${{ fromJSON(inputs.metadata-matrix) }}
                 DB-name: ${{ fromJSON(inputs.db-matrix) }}
                 test-way:
-#                    - "oriHasDataExpHasData"
-#                    - "oriNoDataExpNoData"
-#                    - "oriHasDataExpNoData"
-#                    - "oriNoDataExpHasData"
+                    - "oriHasDataExpHasData"
+                    - "oriNoDataExpNoData"
+                    - "oriHasDataExpNoData"
+                    - "oriNoDataExpHasData"
                     - "testReadOnly"
         runs-on: ${{ matrix.os }}
         env:
             METADATA_STORAGE: ${{ matrix.metadata }}
         steps:
-            - name: show info
-              shell: bash
-              run: |
-                  echo "=======================================4"
-                  echo "java version: ${{ matrix.java }}"
-                  echo "python version: ${{ matrix.python-version }}"
-                  echo "os: ${{ matrix.os }}"
-                  echo "metadata: ${{ matrix.metadata }}"
-                  echo "DB-name: ${{ matrix.DB-name }}"
-                  echo "test-way: ${{ matrix.test-way }}"
-                  echo "close-optimizer: ${{ inputs.close-optimizer}}"
-
             - uses: actions/checkout@v4
             - name: Environment dependence
               uses: ./.github/actions/dependence
