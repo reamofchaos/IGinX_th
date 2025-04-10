@@ -55,10 +55,16 @@ public class LabelProperty {
   }
 
   public String toString() {
-    return "LabelProperty{" +
-        "labelName='" + labelName + '\'' +
-        ", propertyName='" + propertyName + '\'' +
-        ", propertyType='" + propertyType + '\'' +
-        '}';
+    return "LabelProperty{"
+        + "labelName='"
+        + labelName
+        + '\''
+        + ", propertyName='"
+        + propertyName
+        + '\''
+        + ", propertyType='"
+        + propertyType
+        + '\''
+        + '}';
   }
 }

@@ -181,7 +181,7 @@ public class Neo4jClientUtils {
         property += ".*"; // 匹配 tagKV
       }
 
-      Map<String,String> keyPropertyMap = new HashMap<>();
+      Map<String, String> keyPropertyMap = new HashMap<>();
       List<LabelProperty> columnFieldList = getProperties(session, label, property);
       for (LabelProperty labelProperty : columnFieldList) {
         String curlabelName = validateLabelName(labelProperty.getLabelName());
@@ -189,9 +189,9 @@ public class Neo4jClientUtils {
         if (dummyOnly && !isDummy(curlabelName)) {
           continue;
         }
-        if (!keyPropertyMap.containsKey(curlabelName)){
+        if (!keyPropertyMap.containsKey(curlabelName)) {
           String keyProperty = getUniqueConstraintName(session, curlabelName);
-          LOGGER.info("-------------------keyProperty:"+keyProperty);
+          LOGGER.info("-------------------keyProperty:" + keyProperty);
           keyPropertyMap.put(curlabelName, keyProperty);
         }
 
@@ -199,7 +199,8 @@ public class Neo4jClientUtils {
         if (curPropertyNames.equals(IDENTITY_PROPERTY_NAME)) {
           continue;
         }
-        if (keyPropertyMap.get(curlabelName) != null && keyPropertyMap.get(curlabelName).equals(curPropertyNames)){
+        if (keyPropertyMap.get(curlabelName) != null
+            && keyPropertyMap.get(curlabelName).equals(curPropertyNames)) {
           continue;
         }
         labelToProperties
@@ -268,8 +269,7 @@ public class Neo4jClientUtils {
     }
   }
 
-  public static String getUniqueConstraintName(
-      Session session, String label) {
+  public static String getUniqueConstraintName(Session session, String label) {
     try {
       String query = "SHOW CONSTRAINTS WHERE type = 'UNIQUENESS' AND labelsOrTypes = [$label] ";
       List<Record> records =
@@ -278,7 +278,7 @@ public class Neo4jClientUtils {
                 Result result = tx.run(query, parameters("label", label));
                 return result.list();
               });
-      List<LabelProperty> propertiesList= getProperties(session, label, ".*");
+      List<LabelProperty> propertiesList = getProperties(session, label, ".*");
       Map<String, String> properties = new HashMap<>();
       for (LabelProperty labelProperty : propertiesList) {
         properties.put(labelProperty.getPropertyName(), labelProperty.getPropertyType());
@@ -317,14 +317,13 @@ public class Neo4jClientUtils {
         if (isDummy) {
           if (keyProperty == null) {
             expr =
-                    new FilterTransformer("id(" + quotedLabel + ")", label)
-                            .toString(FilterUtils.expandFilter(filter, "id(" + quotedLabel + ")"));
+                new FilterTransformer("id(" + quotedLabel + ")", label)
+                    .toString(FilterUtils.expandFilter(filter, "id(" + quotedLabel + ")"));
           } else {
             expr =
-                    new FilterTransformer(quotedLabel + ".`" + keyProperty + "`", label)
-                            .toString(
-                                    FilterUtils.expandFilter(
-                                            filter, quotedLabel + ".`" + keyProperty + "`"));
+                new FilterTransformer(quotedLabel + ".`" + keyProperty + "`", label)
+                    .toString(
+                        FilterUtils.expandFilter(filter, quotedLabel + ".`" + keyProperty + "`"));
           }
         } else {
           expr =

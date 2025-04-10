@@ -30,9 +30,7 @@ import cn.edu.tsinghua.iginx.integration.tool.ConfLoader;
 import cn.edu.tsinghua.iginx.integration.tool.DBConf;
 import cn.edu.tsinghua.iginx.thrift.RemovedStorageEngineInfo;
 import cn.edu.tsinghua.iginx.thrift.StorageEngineType;
-
 import java.util.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,13 +81,12 @@ public class Neo4jCapacityExpansionIT extends BaseCapacityExpansionIT {
   private void testFloatData() {
     String statement = "select wt02.float from tm.wf05 where wt02.float <= 44.55;";
     List<String> pathList = Constant.READ_ONLY_FLOAT_PATH_LIST;
-//    List<List<Object>> valuesList = Constant.READ_ONLY_FLOAT_VALUES_LIST;
     List<List<Object>> valuesList = new ArrayList<>();
-    for (List<Object> list: Constant.READ_ONLY_FLOAT_VALUES_LIST){
+    for (List<Object> list : Constant.READ_ONLY_FLOAT_VALUES_LIST) {
       List<Object> l = new ArrayList<>();
-      for (Object o: list){
-        if (o instanceof Float){
-          l.add(((Float)o).doubleValue());
+      for (Object o : list) {
+        if (o instanceof Float) {
+          l.add(((Float) o).doubleValue());
         }
       }
       valuesList.add(l);
