@@ -148,24 +148,23 @@ public class Neo4jHistoryDataGenerator extends BaseHistoryDataGenerator {
   @Override
   public void writeSpecialHistoryData() {
     doWriteHistoryData(
-            Constant.readOnlyPort,
-            Constant.READ_ONLY_FLOAT_PATH_LIST,
-            new ArrayList<>(Collections.singletonList(DataType.FLOAT)),
-            Arrays.asList("key1", "key2"),
-            Constant.READ_ONLY_FLOAT_VALUES_LIST);
+        Constant.readOnlyPort,
+        Constant.READ_ONLY_FLOAT_PATH_LIST,
+        new ArrayList<>(Collections.singletonList(DataType.FLOAT)),
+        Arrays.asList("key1", "key2"),
+        Constant.READ_ONLY_FLOAT_VALUES_LIST);
 
     writeHistoryData(
-            Constant.readOnlyPort,
-            Arrays.asList("d1.c1.i", "d1.c1.b", "d1.c1.f", "d1.c1.s"),
-            Arrays.asList(DataType.LONG, DataType.BOOLEAN, DataType.FLOAT, DataType.BINARY),
-            Arrays.asList(1L, 2L, 3L, 4L, 5L),
-            Arrays.asList(
-                    Arrays.asList(0L, true, 0.1, "1st"),
-                    Arrays.asList(1L, false, 1.1, "2nd"),
-                    Arrays.asList(2L, true, 2.1, "3th"),
-                    Arrays.asList(3L, false, 3.1, "4th"),
-                    Arrays.asList(4L, true, 4.1, "5th")));
-
+        Constant.readOnlyPort,
+        Arrays.asList("d1.c1.i", "d1.c1.b", "d1.c1.f", "d1.c1.s"),
+        Arrays.asList(DataType.LONG, DataType.BOOLEAN, DataType.FLOAT, DataType.BINARY),
+        Arrays.asList(1L, 2L, 3L, 4L, 5L),
+        Arrays.asList(
+            Arrays.asList(0L, true, 0.1, "1st"),
+            Arrays.asList(1L, false, 1.1, "2nd"),
+            Arrays.asList(2L, true, 2.1, "3th"),
+            Arrays.asList(3L, false, 3.1, "4th"),
+            Arrays.asList(4L, true, 4.1, "5th")));
   }
 
   @Override
