@@ -19,8 +19,21 @@
 
 port=$1
 pwd
+
+if netstat -an | grep -q ".*:$port.*LISTEN"; then
+  echo "Port $port is open."
+else
+  echo "Port $port is not open."
+fi
+
 echo "stop neo4j $port"
 powershell.exe -Command "Start-Process -FilePath './neo4j_instances/$port/bin/neo4j.bat' -ArgumentList 'stop' -Wait"
 echo "stopped OK."
+
+if netstat -an | grep -q ".*:$port.*LISTEN"; then
+  echo "Port $port is open."
+else
+  echo "Port $port is not open."
+fi
 #powershell -Command "Start-Process -FilePath ./neo4j_instances/$port/bin/neo4j.bat -ArgumentList stop -NoNewWindow -Wait"
 sleep 10
