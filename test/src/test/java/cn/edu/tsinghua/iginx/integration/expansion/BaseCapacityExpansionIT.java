@@ -193,7 +193,7 @@ public abstract class BaseCapacityExpansionIT {
 
   @After
   public void clearData() {
-      Controller.clearData(session);
+    Controller.clearData(session);
   }
 
   private void addStorageEngineInProgress(
