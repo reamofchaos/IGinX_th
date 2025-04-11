@@ -22,5 +22,4 @@ pwd
 echo "start neo4j $port"
 powershell.exe -Command "Start-Process -FilePath './neo4j_instances/$port/bin/neo4j.bat' -ArgumentList 'console' -WindowStyle Hidden"
 echo "start OK."
-#powershell -Command "Start-Process -FilePath ./neo4j_instances/$port/bin/neo4j.bat -ArgumentList console -WindowStyle Hidden"
 sleep 10

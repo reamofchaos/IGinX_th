@@ -17,47 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-#port=$1
-#pwd
-#dir
-#
-#if netstat -an | grep -q ".*:$port.*LISTEN"; then
-#  echo "Port $port is open."
-#else
-#  echo "Port $port is not open."
-#fi
-#
-#powershell -Command "Start-Process -FilePath 'neo4j_instances\\${port}\\bin\\neo4j.bat' -ArgumentList 'status' -Wait"
-#echo "stop neo4j $port"
-#
-#powershell -Command "Start-Process -FilePath 'neo4j_instances\\${port}\\bin\\neo4j.bat' -ArgumentList 'stop' -Wait"
-##powershell -command "Start-Process -FilePath 'influxdb2-2.0.7-windows-amd64-$port/influxd' $arguments -NoNewWindow $redirect"
-#echo "stopped OK."
-#sleep 10
-#powershell -Command "Start-Process -FilePath 'neo4j_instances\\${port}\\bin\\neo4j.bat' -ArgumentList 'status' -Wait"
-#
-#if netstat -an | grep -q ".*:$port.*LISTEN"; then
-#  echo "Port $port is open."
-#else
-#  echo "Port $port is not open."
-#fi
-#
-#sleep 10
-#
-#port1=8888
-#if netstat -an | grep -q ".*:$port1.*LISTEN"; then
-#  echo "Port $port1 is open."
-#else
-#  echo "Port $port1 is not open."
-#fi
-#
-#if netstat -an | grep -q ".*:$port.*LISTEN"; then
-#  echo "Port $port is open."
-#else
-#  echo "Port $port is not open."
-#fi
-##powershell -Command "Start-Process -FilePath ./neo4j_instances/$port/bin/neo4j.bat -ArgumentList stop -NoNewWindow -Wait"
-
 port=$1
 pid=$(netstat -ano | grep ":$port" | awk '{print $5}' | head -n 1)
 if [ ! -z "$pid" ]; then
