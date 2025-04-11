@@ -20,6 +20,6 @@
 port=$1
 pwd
 echo "start neo4j $port"
-powershell.exe -Command "Start-Process -FilePath './neo4j_instances/$port/bin/neo4j.bat' -ArgumentList 'console' -WindowStyle Hidden"
+powershell.exe -Command "\$env:JAVA_HOME = './jdk17';\$env:PATH = \"\$env:JAVA_HOME\\bin;\$env:PATH\";Start-Process -FilePath './neo4j_instances/$port/bin/neo4j.bat' -ArgumentList 'console' -WindowStyle Hidden"
 echo "start OK."
 sleep 10

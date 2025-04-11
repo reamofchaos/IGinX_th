@@ -50,9 +50,9 @@ runs:
                 chmod +x $instance_dir/bin/neo4j
                 chmod +x $instance_dir/bin/neo4j-admin
 
-                $instance_dir/bin/neo4j-admin dbms set-initial-password neo4jtest
+                env JAVA_HOME="./jdk17" $instance_dir/bin/neo4j-admin dbms set-initial-password neo4jtest
 
-                nohup $instance_dir/bin/neo4j console > neo4j$port.log 2>&1 &
+                nohup env JAVA_HOME="./jdk17" $instance_dir/bin/neo4j console > neo4j$port.log 2>&1 &
                 sleep 10
               done
 
@@ -84,8 +84,8 @@ runs:
                 echo "apoc.export.file.enabled=true" >> $instance_dir/conf/apoc.conf
                 echo "apoc.import.file.use_neo4j_config=true" >> $instance_dir/conf/apoc.conf
 
-                powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j-admin.bat -ArgumentList dbms,set-initial-password,neo4jtest -NoNewWindow -Wait"
-                powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j.bat -ArgumentList console -WindowStyle Hidden"
+                powershell -Command "\$env:JAVA_HOME = './jdk17';\$env:PATH = \"\$env:JAVA_HOME\\bin;\$env:PATH\";Start-Process -FilePath $instance_dir/bin/neo4j-admin.bat -ArgumentList dbms,set-initial-password,neo4jtest -NoNewWindow -Wait"
+                powershell -Command "\$env:JAVA_HOME = './jdk17';\$env:PATH = \"\$env:JAVA_HOME\\bin;\$env:PATH\";Start-Process -FilePath $instance_dir/bin/neo4j.bat -ArgumentList console -WindowStyle Hidden"
 
                 sleep 10
               done

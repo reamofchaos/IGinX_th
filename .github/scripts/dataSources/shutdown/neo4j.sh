@@ -19,7 +19,7 @@
 
 port=$1
 pwd
-./neo4j_instances/$port/bin/neo4j stop
+env JAVA_HOME="./jdk17" ./neo4j_instances/$port/bin/neo4j stop
 sleep 5
 
 if netstat -an | grep -q ".*:$port.*LISTEN"; then

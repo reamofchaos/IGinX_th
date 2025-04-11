@@ -19,7 +19,7 @@
 
 port=$1
 pwd
-nohup ./neo4j_instances/$port/bin/neo4j console > neo4j$port.log 2>&1 &
+nohup env JAVA_HOME="./jdk17" ./neo4j_instances/$port/bin/neo4j console > neo4j$port.log 2>&1 &
 sleep 10
 
 if netstat -an | grep -q ".*:$port.*LISTEN"; then
