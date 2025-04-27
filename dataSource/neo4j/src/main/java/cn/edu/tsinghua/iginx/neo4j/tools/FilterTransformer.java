@@ -110,7 +110,7 @@ public class FilterTransformer {
         value = "'^" + filter.getValue().getBinaryVAsString() + "$" + "'";
         return " NOT " + path + " =~ " + value.toString().replace("%", ".*");
       default:
-        op = Op.op2StrWithoutAndOr(filter.getOp()).replace("==", "=");
+        op = Op.op2StrWithoutAndOr(filter.getOp()).replace("==", "=").replace("!=","<>");
         value =
             filter.getValue().getDataType() == DataType.BINARY
                 ? "'" + filter.getValue().getBinaryVAsString() + "'"

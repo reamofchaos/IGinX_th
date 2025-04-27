@@ -401,6 +401,10 @@ public class Neo4jClientUtils {
       Filter filter,
       boolean isDummy) {
     try {
+      if (labelToProperties.isEmpty()) {
+        return new ArrayList<>();
+      }
+
       StringBuilder call = new StringBuilder();
       StringBuilder collect = new StringBuilder(" WITH ");
       StringBuilder unwind = new StringBuilder(" UNWIND apoc.coll.toSet([x IN ");
