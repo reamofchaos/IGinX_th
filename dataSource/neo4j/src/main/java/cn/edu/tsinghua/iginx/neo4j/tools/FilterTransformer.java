@@ -88,7 +88,7 @@ public class FilterTransformer {
     String op =
         Op.op2StrWithoutAndOr(filter.getOp())
             .replace("==", "="); // postgresql does not support "==" but uses "=" instead
-    if (key.startsWith("id(") && key.endsWith(")")){
+    if (key.startsWith("id(") && key.endsWith(")")) {
       return key + " " + op + " " + filter.getValue();
     }
     return getQuotName(key) + " " + op + " " + filter.getValue();

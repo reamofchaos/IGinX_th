@@ -249,7 +249,7 @@ public class Neo4jClientUtils {
                             "labelPattern",
                             ":`" + (labelPattern) + "`",
                             "propertyPattern",
-                                (propertyPattern)));
+                            (propertyPattern)));
                 return result.list();
               });
 
@@ -491,6 +491,7 @@ public class Neo4jClientUtils {
         filter = LogicalFilterUtils.mergeTrue(filter);
       }
       String filterStr = filterTransformer.toString(filter);
+      LOGGER.info("labelToProperties: {}", labelToProperties);
       LOGGER.info("filter: {}", filterStr);
 
       String where = filterStr.isEmpty() ? "" : " WHERE " + filterStr;
