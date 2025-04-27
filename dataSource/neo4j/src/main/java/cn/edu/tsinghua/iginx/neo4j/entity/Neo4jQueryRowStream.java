@@ -111,7 +111,8 @@ public class Neo4jQueryRowStream implements RowStream {
       }
 
       Row row = new Row(header, timestamp, values);
-      if (filter == null || FilterUtils.validate(filter, row)) return row;
+      return row;
+//      if (filter == null || FilterUtils.validate(filter, row)) return row;
     }
 
     return null;
