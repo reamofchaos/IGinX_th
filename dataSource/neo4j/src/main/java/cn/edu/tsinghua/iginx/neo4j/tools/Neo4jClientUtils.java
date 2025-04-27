@@ -315,6 +315,9 @@ public class Neo4jClientUtils {
         keyProperty = getUniqueConstraintName(session, label);
       }
 
+      LOGGER.info("labelToProperties: {}", labelToProperties);
+      LOGGER.info("isDummy: {}", isDummy);
+      LOGGER.info("filter: {}", filter);
       if (isDummy) {
         if (keyProperty == null) {
           expr =
