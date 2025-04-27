@@ -247,9 +247,9 @@ public class Neo4jClientUtils {
                         query,
                         parameters(
                             "labelPattern",
-                            ":`" + labelPattern + "`",
+                            ":`" + escapeRegex(labelPattern) + "`",
                             "propertyPattern",
-                            propertyPattern));
+                                escapeRegex(propertyPattern)));
                 return result.list();
               });
 
