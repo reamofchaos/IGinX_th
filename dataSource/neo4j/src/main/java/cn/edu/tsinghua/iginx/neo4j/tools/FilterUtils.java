@@ -269,7 +269,7 @@ public class FilterUtils {
       case In:
         InFilter inFilter = (InFilter) filter;
         String inPath = inFilter.getPath();
-        if (inPath.contains("*")) {
+        if (true) {
           List<String> matchedPath = getMatchedPath(inPath, columnNamesList);
           if (matchedPath.size() == 0) {
             return new BoolFilter(true);
@@ -292,7 +292,7 @@ public class FilterUtils {
       case Path:
         String pathA = ((PathFilter) filter).getPathA();
         String pathB = ((PathFilter) filter).getPathB();
-        if (pathA.contains("*")) {
+        if (true) {
           List<String> matchedPath = getMatchedPath(pathA, columnNamesList);
           if (matchedPath.size() == 0) {
             return new BoolFilter(true);
@@ -316,7 +316,7 @@ public class FilterUtils {
           }
         }
 
-        if (pathB.contains("*")) {
+        if (true) {
           if (filter.getType() != FilterType.Path) {
             return expandFilter(filter, columnNamesList);
           }

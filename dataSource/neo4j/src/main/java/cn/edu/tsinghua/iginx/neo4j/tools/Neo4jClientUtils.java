@@ -303,8 +303,6 @@ public class Neo4jClientUtils {
       Filter filter,
       boolean isDummy) {
     try {
-      filter = filter.copy();
-
       String expr = "";
       String quotedLabel = getQuoteName(label);
       Map<String, Map<String, String>> labelToProperties = new HashMap<>();
