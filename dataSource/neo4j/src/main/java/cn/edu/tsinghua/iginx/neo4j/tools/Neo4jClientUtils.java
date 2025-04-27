@@ -490,9 +490,7 @@ public class Neo4jClientUtils {
 
       filter = filter.copy();
       FilterTransformer filterTransformer = new FilterTransformer(IDENTITY_PROPERTY_NAME);
-      if (filterTransformer.toString(filter).contains("*")) {
-        filter = expandFilter(filter, labelToProperties);
-      }
+      filter = expandFilter(filter, labelToProperties);
       String filterStr = filterTransformer.toString(filter);
       LOGGER.info("labelToProperties: {}", labelToProperties);
       LOGGER.info("filter: {}", filterStr);
