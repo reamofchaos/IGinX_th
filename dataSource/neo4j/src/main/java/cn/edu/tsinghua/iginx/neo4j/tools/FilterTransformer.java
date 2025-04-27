@@ -19,6 +19,8 @@
  */
 package cn.edu.tsinghua.iginx.neo4j.tools;
 
+import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jSchema.getQuoteName;
+
 import cn.edu.tsinghua.iginx.engine.shared.data.Value;
 import cn.edu.tsinghua.iginx.engine.shared.operator.filter.*;
 import cn.edu.tsinghua.iginx.thrift.DataType;
@@ -27,11 +29,9 @@ import java.util.stream.Collectors;
 public class FilterTransformer {
 
   private String key;
-  private String label;
 
-  public FilterTransformer(String key, String label) {
+  public FilterTransformer(String key) {
     this.key = key;
-    this.label = label;
   }
 
   public String toString(Filter filter) {
@@ -92,22 +92,30 @@ public class FilterTransformer {
   }
 
   private String toString(ValueFilter filter) {
-    String path = filter.getPath();
+    Neo4jSchema schema = new Neo4jSchema(filter.getPath());
+    String path = schema.getFullName();
     String op;
     Object value;
 
-    op = Op.op2StrWithoutAndOr(filter.getOp()).replace("==", "=");
-    value =
-        filter.getValue().getDataType() == DataType.BINARY
-            ? "'" + filter.getValue().getBinaryVAsString() + "'"
-            : filter.getValue().getValue();
-
-    Neo4jSchema schema = new Neo4jSchema(path);
-    if (!schema.getLabelName().equals(this.label)) {
-      return "";
+    switch (filter.getOp()) {
+      case LIKE:
+      case LIKE_AND:
+        value = "'^" + filter.getValue().getBinaryVAsString() + "$" + "'";
+        return path + " LIKE " + value;
+      case NOT_LIKE:
+      case NOT_LIKE_AND:
+        value = "'^" + filter.getValue().getBinaryVAsString() + "$" + "'";
+        return " NOT " + path + " LIKE " + value;
+      default:
+        op = Op.op2StrWithoutAndOr(filter.getOp()).replace("==", "=");
+        value =
+            filter.getValue().getDataType() == DataType.BINARY
+                ? "'" + filter.getValue().getBinaryVAsString() + "'"
+                : filter.getValue().getValue();
+        break;
     }
 
-    return schema.getFullName() + " " + op + " " + value;
+    return path + " " + op + " " + value;
   }
 
   private String toString(OrFilter filter) {
@@ -131,11 +139,6 @@ public class FilterTransformer {
         Op.op2StrWithoutAndOr(filter.getOp())
             .replace("==", "="); // postgresql does not support "==" but uses "=" instead
 
-    Neo4jSchema schemaA = new Neo4jSchema(filter.getPathA());
-    Neo4jSchema schemaB = new Neo4jSchema(filter.getPathB());
-    if (!schemaA.getLabelName().equals(this.label) || !schemaB.getLabelName().equals(this.label)) {
-      return "";
-    }
     return new Neo4jSchema(filter.getPathA()).getFullName()
         + " "
         + op
@@ -146,7 +149,6 @@ public class FilterTransformer {
   private String toString(InFilter filter) {
     String path = filter.getPath();
 
-    String op = filter.getInOp().isNotOp() ? "not in" : "in";
     String values =
         "["
             + filter.getValues().stream()
@@ -162,10 +164,6 @@ public class FilterTransformer {
                 .collect(Collectors.joining(","))
             + "]";
 
-    Neo4jSchema schema = new Neo4jSchema(path);
-    if (!schema.getLabelName().equals(this.label)) {
-      return "";
-    }
     return (filter.getInOp().isNotOp() ? "not " : "")
         + new Neo4jSchema(path).getFullName()
         + " in "
@@ -173,6 +171,6 @@ public class FilterTransformer {
   }
 
   private String getQuotName(String name) {
-    return name;
+    return getQuoteName(name);
   }
 }

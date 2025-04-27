@@ -23,6 +23,7 @@ import static cn.edu.tsinghua.iginx.constant.GlobalConstant.SEPARATOR;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.IDENTITY_PROPERTY_NAME;
 import static cn.edu.tsinghua.iginx.neo4j.tools.DataTransformer.fromIginxType;
 import static cn.edu.tsinghua.iginx.neo4j.tools.DataTransformer.fromStringDataType;
+import static cn.edu.tsinghua.iginx.neo4j.tools.FilterUtils.filterContainsType;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jClientUtils.isDummy;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jClientUtils.trimPrefix;
 import static cn.edu.tsinghua.iginx.neo4j.tools.TagKVUtils.splitFullName;
@@ -30,6 +31,7 @@ import static cn.edu.tsinghua.iginx.neo4j.tools.TagKVUtils.splitFullName;
 import cn.edu.tsinghua.iginx.engine.physical.exception.PhysicalException;
 import cn.edu.tsinghua.iginx.engine.physical.exception.PhysicalTaskExecuteFailureException;
 import cn.edu.tsinghua.iginx.engine.physical.exception.StorageInitializationException;
+import cn.edu.tsinghua.iginx.engine.physical.memory.execute.utils.FilterUtils;
 import cn.edu.tsinghua.iginx.engine.physical.storage.IStorage;
 import cn.edu.tsinghua.iginx.engine.physical.storage.domain.Column;
 import cn.edu.tsinghua.iginx.engine.physical.storage.domain.DataArea;
@@ -38,10 +40,7 @@ import cn.edu.tsinghua.iginx.engine.shared.KeyRange;
 import cn.edu.tsinghua.iginx.engine.shared.data.write.DataView;
 import cn.edu.tsinghua.iginx.engine.shared.data.write.RowDataView;
 import cn.edu.tsinghua.iginx.engine.shared.operator.*;
-import cn.edu.tsinghua.iginx.engine.shared.operator.filter.AndFilter;
-import cn.edu.tsinghua.iginx.engine.shared.operator.filter.Filter;
-import cn.edu.tsinghua.iginx.engine.shared.operator.filter.KeyFilter;
-import cn.edu.tsinghua.iginx.engine.shared.operator.filter.Op;
+import cn.edu.tsinghua.iginx.engine.shared.operator.filter.*;
 import cn.edu.tsinghua.iginx.engine.shared.operator.tag.TagFilter;
 import cn.edu.tsinghua.iginx.metadata.entity.ColumnsInterval;
 import cn.edu.tsinghua.iginx.metadata.entity.KeyInterval;
@@ -162,12 +161,21 @@ public class Neo4jStorage implements IStorage {
               false);
 
       List<cn.edu.tsinghua.iginx.neo4j.entity.Column> columns = new ArrayList<>();
-      for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
-        String labelName = entry.getKey();
-        Map<String, String> propertyMap = entry.getValue();
-        columns.addAll(
-            Neo4jClientUtils.query(session, labelName, propertyMap, filter, isDummy(labelName)));
+
+      if (FilterUtils.getAllPathsFromFilter(filter).stream().noneMatch(s -> s.contains("*"))
+          && !(labelToProperties.size() > 1
+              && filterContainsType(Arrays.asList(FilterType.Value, FilterType.Path), filter))) {
+        for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
+          String labelName = entry.getKey();
+          Map<String, String> propertyMap = entry.getValue();
+
+          columns.addAll(
+              Neo4jClientUtils.query(session, labelName, propertyMap, filter, isDummy(labelName)));
+        }
+        return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter), null);
       }
+
+      columns.addAll(Neo4jClientUtils.query(session, labelToProperties, filter, false));
 
       return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter), null);
     } catch (Exception e) {
@@ -185,11 +193,21 @@ public class Neo4jStorage implements IStorage {
               session, project.getPatterns(), project.getTagFilter(), "", true);
 
       List<cn.edu.tsinghua.iginx.neo4j.entity.Column> columns = new ArrayList<>();
-      for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
-        String labelName = entry.getKey();
-        Map<String, String> propertyMap = entry.getValue();
-        columns.addAll(Neo4jClientUtils.query(session, labelName, propertyMap, filter, true));
+
+      if (FilterUtils.getAllPathsFromFilter(filter).stream().noneMatch(s -> s.contains("*"))
+          && !(labelToProperties.size() > 1
+              && filterContainsType(Arrays.asList(FilterType.Value, FilterType.Path), filter))) {
+        for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
+          String labelName = entry.getKey();
+          Map<String, String> propertyMap = entry.getValue();
+
+          columns.addAll(
+              Neo4jClientUtils.query(session, labelName, propertyMap, filter, isDummy(labelName)));
+        }
+        return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter), null);
       }
+
+      columns.addAll(Neo4jClientUtils.query(session, labelToProperties, filter, false));
 
       return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter), null);
     } catch (Exception e) {
