@@ -357,6 +357,8 @@ public class FilterUtils {
     List<String> matchedPath = new ArrayList<>();
     path = StringUtils.reformatPath(path);
     Pattern pattern = Pattern.compile("^(unit.*\\.)?" + path + "$");
+    System.out.println("path="+path);
+    System.out.println("pattern="+pattern);
     for (List<String> columnNames : columnNamesList) {
       for (String columnName : columnNames) {
         Matcher matcher = pattern.matcher(splitFullName(columnName).k);
@@ -365,6 +367,7 @@ public class FilterUtils {
         }
       }
     }
+    System.out.println("matchedPath="+matchedPath);
     return matchedPath;
   }
 }

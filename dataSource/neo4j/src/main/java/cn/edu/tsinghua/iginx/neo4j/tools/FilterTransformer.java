@@ -104,11 +104,11 @@ public class FilterTransformer {
       case LIKE:
       case LIKE_AND:
         value = "'^" + filter.getValue().getBinaryVAsString() + "$" + "'";
-        return path + " LIKE " + value;
+        return path + " =~ " + value.toString().replace("%", ".*");
       case NOT_LIKE:
       case NOT_LIKE_AND:
         value = "'^" + filter.getValue().getBinaryVAsString() + "$" + "'";
-        return " NOT " + path + " LIKE " + value;
+        return " NOT " + path + " =~ " + value.toString().replace("%", ".*");
       default:
         op = Op.op2StrWithoutAndOr(filter.getOp()).replace("==", "=");
         value =
