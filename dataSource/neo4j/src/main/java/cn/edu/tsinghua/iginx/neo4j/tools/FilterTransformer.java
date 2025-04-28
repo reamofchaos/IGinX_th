@@ -19,6 +19,7 @@
  */
 package cn.edu.tsinghua.iginx.neo4j.tools;
 
+import static cn.edu.tsinghua.iginx.neo4j.tools.Constants.IDENTITY_PROPERTY_NAME;
 import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jSchema.getQuoteName;
 
 import cn.edu.tsinghua.iginx.engine.shared.data.Value;
@@ -99,8 +100,8 @@ public class FilterTransformer {
   }
 
   private String getFullPath(String path) {
-    if (StringUtils.isNotEmpty(storageUnit)){
-      if (!path.startsWith(storageUnit)){
+    if (StringUtils.isNotEmpty(storageUnit) && !path.startsWith(IDENTITY_PROPERTY_NAME)){
+      if (!path.startsWith(storageUnit) && !path.startsWith("`"+storageUnit)){
         path = storageUnit + "." + path;
       }
     }
