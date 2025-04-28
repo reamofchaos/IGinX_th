@@ -313,9 +313,6 @@ public class Neo4jClientUtils {
         keyProperty = getUniqueConstraintName(session, label);
       }
 
-      LOGGER.info("labelToProperties: {}", labelToProperties);
-      LOGGER.info("isDummy: {}", isDummy);
-      LOGGER.info("filter: {}", filter);
       if (isDummy) {
         if (keyProperty == null) {
           expr =
@@ -495,8 +492,6 @@ public class Neo4jClientUtils {
           new FilterTransformer(IDENTITY_PROPERTY_NAME, storageUnit);
       filter = expandFilter(filter, labelToProperties);
       String filterStr = filterTransformer.toString(filter);
-      LOGGER.info("labelToProperties: {}", labelToProperties);
-      LOGGER.info("filter: {}", filterStr);
 
       String where = filterStr.isEmpty() ? "" : " WHERE " + filterStr;
 
