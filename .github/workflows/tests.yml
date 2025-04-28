@@ -41,7 +41,7 @@ jobs:
         with:
             metadata-matrix: '["zookeeper"]'
             db-matrix: '["Neo4j"]'
-            timeout-minutes: 120
+            timeout-minutes: 240
     db-ce-no-optimizer-neo4j:
         uses: ./.github/workflows/DB-CE.yml
         with:
