@@ -152,6 +152,7 @@ public class Neo4jStorage implements IStorage {
   private TaskExecuteResult executeProjectWithFilter(
       Project project, Filter filter, DataArea dataArea) {
     LOGGER.info("orgfilter: {}", filter);
+    LOGGER.info(filter.getClass().getName());
     try (Session session = driver.session()) {
       Map<String, Map<String, String>> labelToProperties =
           Neo4jClientUtils.determinePaths(
@@ -165,18 +166,27 @@ public class Neo4jStorage implements IStorage {
 
       if (FilterUtils.getAllPathsFromFilter(filter.copy()).stream().noneMatch(s -> s.contains("*"))
           && !(labelToProperties.size() > 1
-              && filterContainsType(Arrays.asList(FilterType.Value, FilterType.Path), filter.copy()))) {
+              && filterContainsType(
+                  Arrays.asList(FilterType.Value, FilterType.Path), filter.copy()))) {
         for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
           String labelName = entry.getKey();
           Map<String, String> propertyMap = entry.getValue();
 
           columns.addAll(
-              Neo4jClientUtils.query(session, labelName, propertyMap, filter.copy(), isDummy(labelName), dataArea.getStorageUnit()));
+              Neo4jClientUtils.query(
+                  session,
+                  labelName,
+                  propertyMap,
+                  filter.copy(),
+                  isDummy(labelName),
+                  dataArea.getStorageUnit()));
         }
         return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter.copy()), null);
       }
 
-      columns.addAll(Neo4jClientUtils.query(session, labelToProperties, filter.copy(), false, dataArea.getStorageUnit()));
+      columns.addAll(
+          Neo4jClientUtils.query(
+              session, labelToProperties, filter.copy(), false, dataArea.getStorageUnit()));
 
       return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter.copy()), null);
     } catch (Exception e) {
@@ -197,13 +207,15 @@ public class Neo4jStorage implements IStorage {
 
       if (FilterUtils.getAllPathsFromFilter(filter.copy()).stream().noneMatch(s -> s.contains("*"))
           && !(labelToProperties.size() > 1
-              && filterContainsType(Arrays.asList(FilterType.Value, FilterType.Path), filter.copy()))) {
+              && filterContainsType(
+                  Arrays.asList(FilterType.Value, FilterType.Path), filter.copy()))) {
         for (Map.Entry<String, Map<String, String>> entry : labelToProperties.entrySet()) {
           String labelName = entry.getKey();
           Map<String, String> propertyMap = entry.getValue();
 
           columns.addAll(
-              Neo4jClientUtils.query(session, labelName, propertyMap, filter.copy(), isDummy(labelName), ""));
+              Neo4jClientUtils.query(
+                  session, labelName, propertyMap, filter.copy(), isDummy(labelName), ""));
         }
         return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter.copy()), null);
       }

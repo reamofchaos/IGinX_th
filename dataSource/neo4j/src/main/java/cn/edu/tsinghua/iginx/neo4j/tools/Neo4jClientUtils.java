@@ -29,7 +29,6 @@ import static cn.edu.tsinghua.iginx.neo4j.tools.RegexEscaper.escapeRegex;
 import static cn.edu.tsinghua.iginx.neo4j.tools.TagKVUtils.splitFullName;
 import static org.neo4j.driver.Values.parameters;
 
-import cn.edu.tsinghua.iginx.engine.logical.utils.LogicalFilterUtils;
 import cn.edu.tsinghua.iginx.engine.shared.KeyRange;
 import cn.edu.tsinghua.iginx.engine.shared.operator.filter.Filter;
 import cn.edu.tsinghua.iginx.engine.shared.operator.tag.TagFilter;
@@ -492,7 +491,8 @@ public class Neo4jClientUtils {
       }
 
       filter = filter.copy();
-      FilterTransformer filterTransformer = new FilterTransformer(IDENTITY_PROPERTY_NAME, storageUnit);
+      FilterTransformer filterTransformer =
+          new FilterTransformer(IDENTITY_PROPERTY_NAME, storageUnit);
       filter = expandFilter(filter, labelToProperties);
       String filterStr = filterTransformer.toString(filter);
       LOGGER.info("labelToProperties: {}", labelToProperties);

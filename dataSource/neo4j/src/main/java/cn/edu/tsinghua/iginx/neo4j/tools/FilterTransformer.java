@@ -25,9 +25,8 @@ import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jSchema.getQuoteName;
 import cn.edu.tsinghua.iginx.engine.shared.data.Value;
 import cn.edu.tsinghua.iginx.engine.shared.operator.filter.*;
 import cn.edu.tsinghua.iginx.thrift.DataType;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 
 public class FilterTransformer {
 
@@ -100,11 +99,11 @@ public class FilterTransformer {
   }
 
   private String getFullPath(String path) {
-    if (StringUtils.isNotEmpty(storageUnit) && !path.startsWith(IDENTITY_PROPERTY_NAME)){
-      if (!path.startsWith(storageUnit) && !path.startsWith("`"+storageUnit)){
-        if (path.startsWith("`")){
+    if (StringUtils.isNotEmpty(storageUnit) && !path.startsWith(IDENTITY_PROPERTY_NAME)) {
+      if (!path.startsWith(storageUnit) && !path.startsWith("`" + storageUnit)) {
+        if (path.startsWith("`")) {
           path = "`" + storageUnit + "." + path.substring(1);
-        }else {
+        } else {
           path = storageUnit + "." + path;
         }
       }
@@ -128,7 +127,7 @@ public class FilterTransformer {
         value = "'^" + filter.getValue().getBinaryVAsString() + "$" + "'";
         return " NOT " + path + " =~ " + value.toString().replace("%", ".*");
       default:
-        op = Op.op2StrWithoutAndOr(filter.getOp()).replace("==", "=").replace("!=","<>");
+        op = Op.op2StrWithoutAndOr(filter.getOp()).replace("==", "=").replace("!=", "<>");
         value =
             filter.getValue().getDataType() == DataType.BINARY
                 ? "'" + filter.getValue().getBinaryVAsString() + "'"
@@ -158,7 +157,8 @@ public class FilterTransformer {
   private String toString(PathFilter filter) {
     String op =
         Op.op2StrWithoutAndOr(filter.getOp())
-            .replace("==", "="); // postgresql does not support "==" but uses "=" instead
+            .replace("==", "=")
+            .replace("!=", "<>"); // postgresql does not support "==" but uses "=" instead
 
     return new Neo4jSchema(getFullPath(filter.getPathA())).getFullName()
         + " "
