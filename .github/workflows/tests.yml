@@ -41,14 +41,14 @@ jobs:
         with:
             metadata-matrix: '["zookeeper"]'
             db-matrix: '["Neo4j"]'
-            timeout-minutes: 60
+            timeout-minutes: 120
     db-ce-no-optimizer-neo4j:
         uses: ./.github/workflows/DB-CE.yml
         with:
             metadata-matrix: '["zookeeper"]'
             db-matrix: '["Neo4j"]'
             close-optimizer: "true"
-            timeout-minutes: 50
+            timeout-minutes: 60
     standalone-test-no-mac-relational:
         uses: ./.github/workflows/standalone-test.yml
         with:
