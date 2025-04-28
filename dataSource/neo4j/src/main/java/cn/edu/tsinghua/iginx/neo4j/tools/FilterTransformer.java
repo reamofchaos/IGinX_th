@@ -102,7 +102,11 @@ public class FilterTransformer {
   private String getFullPath(String path) {
     if (StringUtils.isNotEmpty(storageUnit) && !path.startsWith(IDENTITY_PROPERTY_NAME)){
       if (!path.startsWith(storageUnit) && !path.startsWith("`"+storageUnit)){
-        path = storageUnit + "." + path;
+        if (path.startsWith("`")){
+          path = "`" + storageUnit + "." + path.substring(1);
+        }else {
+          path = storageUnit + "." + path;
+        }
       }
     }
     return path;
