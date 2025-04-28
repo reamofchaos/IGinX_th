@@ -24,14 +24,18 @@ import static cn.edu.tsinghua.iginx.neo4j.tools.Neo4jSchema.getQuoteName;
 import cn.edu.tsinghua.iginx.engine.shared.data.Value;
 import cn.edu.tsinghua.iginx.engine.shared.operator.filter.*;
 import cn.edu.tsinghua.iginx.thrift.DataType;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.stream.Collectors;
 
 public class FilterTransformer {
 
   private String key;
+  private String storageUnit;
 
-  public FilterTransformer(String key) {
+  public FilterTransformer(String key, String storageUnit) {
     this.key = key;
+    this.storageUnit = storageUnit;
   }
 
   public String toString(Filter filter) {
@@ -94,9 +98,18 @@ public class FilterTransformer {
     return getQuotName(key) + " " + op + " " + filter.getValue();
   }
 
+  private String getFullPath(String path) {
+    if (StringUtils.isNotEmpty(storageUnit)){
+      if (!path.startsWith(storageUnit)){
+        path = storageUnit + "." + path;
+      }
+    }
+    return path;
+  }
+
   private String toString(ValueFilter filter) {
     Neo4jSchema schema = new Neo4jSchema(filter.getPath());
-    String path = schema.getFullName();
+    String path = getFullPath(schema.getFullName());
     String op;
     Object value;
 
@@ -142,15 +155,15 @@ public class FilterTransformer {
         Op.op2StrWithoutAndOr(filter.getOp())
             .replace("==", "="); // postgresql does not support "==" but uses "=" instead
 
-    return new Neo4jSchema(filter.getPathA()).getFullName()
+    return new Neo4jSchema(getFullPath(filter.getPathA())).getFullName()
         + " "
         + op
         + " "
-        + new Neo4jSchema(filter.getPathB()).getFullName();
+        + new Neo4jSchema(getFullPath(filter.getPathB())).getFullName();
   }
 
   private String toString(InFilter filter) {
-    String path = filter.getPath();
+    String path = getFullPath(filter.getPath());
 
     String values =
         "["

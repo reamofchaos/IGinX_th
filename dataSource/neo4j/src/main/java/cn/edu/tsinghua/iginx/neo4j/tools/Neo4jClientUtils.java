@@ -301,7 +301,8 @@ public class Neo4jClientUtils {
       String label,
       Map<String, String> properties,
       Filter filter,
-      boolean isDummy) {
+      boolean isDummy,
+      String storageUnit) {
     try {
       String expr = "";
       String quotedLabel = getQuoteName(label);
@@ -319,16 +320,16 @@ public class Neo4jClientUtils {
       if (isDummy) {
         if (keyProperty == null) {
           expr =
-              new FilterTransformer("id(" + quotedLabel + ")")
+              new FilterTransformer("id(" + quotedLabel + ")", storageUnit)
                   .toString(expandFilter(filter, labelToProperties));
         } else {
           expr =
-              new FilterTransformer(quotedLabel + ".`" + keyProperty + "`")
+              new FilterTransformer(quotedLabel + ".`" + keyProperty + "`", storageUnit)
                   .toString(expandFilter(filter, labelToProperties));
         }
       } else {
         expr =
-            new FilterTransformer(quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`")
+            new FilterTransformer(quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`", storageUnit)
                 .toString(expandFilter(filter, labelToProperties));
       }
       if (StringUtils.isNotEmpty(expr)) {
@@ -400,7 +401,8 @@ public class Neo4jClientUtils {
       Session session,
       Map<String, Map<String, String>> labelToProperties,
       Filter filter,
-      boolean isDummy) {
+      boolean isDummy,
+      String storageUnit) {
     try {
       if (labelToProperties.isEmpty()) {
         return new ArrayList<>();
@@ -490,7 +492,7 @@ public class Neo4jClientUtils {
       }
 
       filter = filter.copy();
-      FilterTransformer filterTransformer = new FilterTransformer(IDENTITY_PROPERTY_NAME);
+      FilterTransformer filterTransformer = new FilterTransformer(IDENTITY_PROPERTY_NAME, storageUnit);
       filter = expandFilter(filter, labelToProperties);
       String filterStr = filterTransformer.toString(filter);
       LOGGER.info("labelToProperties: {}", labelToProperties);

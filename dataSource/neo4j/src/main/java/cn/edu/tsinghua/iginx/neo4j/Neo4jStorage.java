@@ -171,12 +171,12 @@ public class Neo4jStorage implements IStorage {
           Map<String, String> propertyMap = entry.getValue();
 
           columns.addAll(
-              Neo4jClientUtils.query(session, labelName, propertyMap, filter.copy(), isDummy(labelName)));
+              Neo4jClientUtils.query(session, labelName, propertyMap, filter.copy(), isDummy(labelName), dataArea.getStorageUnit()));
         }
         return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter.copy()), null);
       }
 
-      columns.addAll(Neo4jClientUtils.query(session, labelToProperties, filter.copy(), false));
+      columns.addAll(Neo4jClientUtils.query(session, labelToProperties, filter.copy(), false, dataArea.getStorageUnit()));
 
       return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter.copy()), null);
     } catch (Exception e) {
@@ -203,12 +203,12 @@ public class Neo4jStorage implements IStorage {
           Map<String, String> propertyMap = entry.getValue();
 
           columns.addAll(
-              Neo4jClientUtils.query(session, labelName, propertyMap, filter.copy(), isDummy(labelName)));
+              Neo4jClientUtils.query(session, labelName, propertyMap, filter.copy(), isDummy(labelName), ""));
         }
         return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter.copy()), null);
       }
 
-      columns.addAll(Neo4jClientUtils.query(session, labelToProperties, filter.copy(), false));
+      columns.addAll(Neo4jClientUtils.query(session, labelToProperties, filter.copy(), false, ""));
 
       return new TaskExecuteResult(new Neo4jQueryRowStream(columns, filter.copy()), null);
     } catch (Exception e) {
