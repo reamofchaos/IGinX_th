@@ -31,7 +31,6 @@ import static org.neo4j.driver.Values.parameters;
 
 import cn.edu.tsinghua.iginx.engine.shared.KeyRange;
 import cn.edu.tsinghua.iginx.engine.shared.operator.filter.Filter;
-import cn.edu.tsinghua.iginx.engine.shared.operator.filter.FilterType;
 import cn.edu.tsinghua.iginx.engine.shared.operator.tag.TagFilter;
 import cn.edu.tsinghua.iginx.neo4j.Neo4jStorage;
 import cn.edu.tsinghua.iginx.neo4j.entity.Column;
@@ -326,7 +325,8 @@ public class Neo4jClientUtils {
         }
       } else {
         expr =
-            new FilterTransformer(quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`", storageUnit, label)
+            new FilterTransformer(
+                    quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`", storageUnit, label)
                 .toString(expandFilter(filter, labelToProperties));
       }
       if (StringUtils.isNotEmpty(expr)) {

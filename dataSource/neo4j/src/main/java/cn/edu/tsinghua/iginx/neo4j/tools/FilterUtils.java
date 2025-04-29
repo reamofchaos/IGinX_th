@@ -334,11 +334,12 @@ public class FilterUtils {
           if (matchedPath.size() == 0) {
             return new BoolFilter(true);
           } else if (matchedPath.size() == 1) {
-            PathFilter newPathFilter = new PathFilter(
+            PathFilter newPathFilter =
+                new PathFilter(
                     matchedPath.get(0),
                     ((PathFilter) filter).getOp(),
                     ((PathFilter) filter).getPathB());
-            if (pathB.contains("*")){
+            if (pathB.contains("*")) {
               return expandFilter(newPathFilter, columnNamesList);
             }
             return newPathFilter;
