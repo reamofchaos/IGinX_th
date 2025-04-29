@@ -7,7 +7,7 @@ on:
                 description: "The java version to run the test on"
                 type: string
                 required: false
-                default: '["17"]'
+                default: '["8"]'
             python-matrix:
                 description: "The python version to run the test on"
                 type: string
@@ -27,7 +27,7 @@ on:
                 description: "The database to run the test on"
                 type: string
                 required: false
-                default: '["IoTDB12", "InfluxDB", "FileSystem", "PostgreSQL", "Redis", "MongoDB", "MySQL"]'
+                default: '["IoTDB12", "InfluxDB", "FileSystem", "PostgreSQL", "Redis", "MongoDB", "MySQL", "Neo4j"]'
             timeout-minutes:
                 description: "The timeout minutes for the job"
                 type: number
