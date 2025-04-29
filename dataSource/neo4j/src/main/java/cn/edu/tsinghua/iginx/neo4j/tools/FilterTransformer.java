@@ -32,8 +32,9 @@ public class FilterTransformer {
 
   private String key;
   private String storageUnit;
+  private String label;
 
-  public FilterTransformer(String key, String storageUnit) {
+  public FilterTransformer(String key, String storageUnit, String label) {
     this.key = key;
     this.storageUnit = storageUnit;
   }
@@ -113,6 +114,11 @@ public class FilterTransformer {
 
   private String toString(ValueFilter filter) {
     Neo4jSchema schema = new Neo4jSchema(filter.getPath());
+
+    if (StringUtils.isNotEmpty(label)&&!schema.getLabelName().equals(label) && !schema.getLabelName().equals(storageUnit+"."+label)){
+      return "true";
+    }
+
     String path = getFullPath(schema.getFullName());
     String op;
     Object value;
@@ -155,6 +161,15 @@ public class FilterTransformer {
   }
 
   private String toString(PathFilter filter) {
+    Neo4jSchema schemaA = new Neo4jSchema(filter.getPathA());
+    Neo4jSchema schemaB = new Neo4jSchema(filter.getPathB());
+    if (StringUtils.isNotEmpty(label)&&!schemaA.getLabelName().equals(label) && !schemaA.getLabelName().equals(storageUnit+"."+label)){
+      return "true";
+    }
+    if (StringUtils.isNotEmpty(label)&&!schemaB.getLabelName().equals(label) && !schemaB.getLabelName().equals(storageUnit+"."+label)){
+      return "true";
+    }
+
     String op =
         Op.op2StrWithoutAndOr(filter.getOp())
             .replace("==", "=")
@@ -168,6 +183,10 @@ public class FilterTransformer {
   }
 
   private String toString(InFilter filter) {
+    Neo4jSchema schema = new Neo4jSchema(filter.getPath());
+    if (StringUtils.isNotEmpty(label)&&!schema.getLabelName().equals(label) && !schema.getLabelName().equals(storageUnit+"."+label)){
+      return "true";
+    }
     String path = getFullPath(filter.getPath());
 
     String values =

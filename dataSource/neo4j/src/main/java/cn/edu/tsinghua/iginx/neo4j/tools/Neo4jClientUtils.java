@@ -31,6 +31,7 @@ import static org.neo4j.driver.Values.parameters;
 
 import cn.edu.tsinghua.iginx.engine.shared.KeyRange;
 import cn.edu.tsinghua.iginx.engine.shared.operator.filter.Filter;
+import cn.edu.tsinghua.iginx.engine.shared.operator.filter.FilterType;
 import cn.edu.tsinghua.iginx.engine.shared.operator.tag.TagFilter;
 import cn.edu.tsinghua.iginx.neo4j.Neo4jStorage;
 import cn.edu.tsinghua.iginx.neo4j.entity.Column;
@@ -316,16 +317,16 @@ public class Neo4jClientUtils {
       if (isDummy) {
         if (keyProperty == null) {
           expr =
-              new FilterTransformer("id(" + quotedLabel + ")", storageUnit)
+              new FilterTransformer("id(" + quotedLabel + ")", storageUnit, label)
                   .toString(expandFilter(filter, labelToProperties));
         } else {
           expr =
-              new FilterTransformer(quotedLabel + ".`" + keyProperty + "`", storageUnit)
+              new FilterTransformer(quotedLabel + ".`" + keyProperty + "`", storageUnit, label)
                   .toString(expandFilter(filter, labelToProperties));
         }
       } else {
         expr =
-            new FilterTransformer(quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`", storageUnit)
+            new FilterTransformer(quotedLabel + ".`" + IDENTITY_PROPERTY_NAME + "`", storageUnit, label)
                 .toString(expandFilter(filter, labelToProperties));
       }
       if (StringUtils.isNotEmpty(expr)) {
@@ -489,7 +490,7 @@ public class Neo4jClientUtils {
 
       filter = filter.copy();
       FilterTransformer filterTransformer =
-          new FilterTransformer(IDENTITY_PROPERTY_NAME, storageUnit);
+          new FilterTransformer(IDENTITY_PROPERTY_NAME, storageUnit, null);
       filter = expandFilter(filter, labelToProperties);
       String filterStr = filterTransformer.toString(filter);
 
