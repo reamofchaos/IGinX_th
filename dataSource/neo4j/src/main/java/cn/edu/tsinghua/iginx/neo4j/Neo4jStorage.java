@@ -151,8 +151,6 @@ public class Neo4jStorage implements IStorage {
 
   private TaskExecuteResult executeProjectWithFilter(
       Project project, Filter filter, DataArea dataArea) {
-    LOGGER.info("orgfilter: {}", filter);
-    LOGGER.info(filter.getClass().getName());
     try (Session session = driver.session()) {
       Map<String, Map<String, String>> labelToProperties =
           Neo4jClientUtils.determinePaths(
